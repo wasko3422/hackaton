@@ -18,17 +18,17 @@ class Client(ModelTimestamps):
     last_name = models.CharField(max_length=64)
 
 
-class Car(ModelTimestamps):
-    model = models.ForeignKey(Model, on_delete=models.PROTECT)
-    license_plate_number = models.CharField(max_length=128)
-    sold_at = models.DateTimeField()
-
-
 class Model(ModelTimestamps):
     make = models.CharField(max_length=128)
     model = models.CharField(max_length=128)
     maintaince_kms = models.IntegerField()
     maintaince_years = models.IntegerField()
+
+
+class Car(ModelTimestamps):
+    model = models.ForeignKey(Model, on_delete=models.PROTECT)
+    license_plate_number = models.CharField(max_length=128)
+    sold_at = models.DateTimeField()
 
 
 class City(models.Model):
