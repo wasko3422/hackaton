@@ -51,10 +51,31 @@ class Contract(ModelTimestamps):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="contracts")
     car = models.OneToOneField(Car)
 
+class OrdersJobType(models.Model):
+    pass
 
 class Order(ModelTimestamps):
+
+    COMBINATIONS = [
+        ('1', '1'),
+        ('2', '2')
+    ]   
+
     contract = models.OneToOneField(Contract, on_delete=models.PROTECT)
     client = models.OneToOneField(Client, on_delete=models.PROTECT)
+    dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, null=True, blank=True)
+    city = models.OneToOneField(City, on_delete=models.PROTECT)
+    comment = models.CharField(max_length=512)
+    mileage = models.IntegerField()
+    date_expected = models.DateTimeField(null=True)
+    part_of_day_expected = models.CharField(choices=COMBINATIONS)
+    is_auto_sending = models.BooleanField(default=False)
+    sent_at = models.DateTimeField(null=True)
+    order_job_types = models.ForeignKey(OrdersJobType, on_delete=models.PROTECT)
 
+
+class JobType(models.Model):
+    name = models.CharField(max_length=64)
+    order_job_types = models.ForeignKey(OrdersJobType, on_delete=models.PROTECT)
 
 
