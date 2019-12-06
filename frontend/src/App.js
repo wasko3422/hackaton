@@ -1,12 +1,13 @@
-import React from "react";
-import Index from "./pages/index";
-import New from "./pages/new";
-import Map from "./pages/map";
-import logo from "./logo.svg";
+import React from 'react';
+import Index from './pages/index';
+import New from './pages/new';
+import Map from './pages/map';
+import logo from './logo.svg';
+import './App.css';
 
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import { Layout, PageHeader } from "antd";
+import { Layout, PageHeader } from 'antd';
 
 const { Footer, Content } = Layout;
 
@@ -16,11 +17,11 @@ export default function App() {
       <Layout className="layout">
         <PageHeader
           style={{
-            backgroundColor: "#fff"
+            backgroundColor: '#fff',
           }}
           title={<img src={logo} height={40} />}
         />
-        <Content style={{ padding: "20px 50px" }}>
+        <Content className="content">
           <Switch>
             <Route path="/new">
               <New />
