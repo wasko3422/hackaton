@@ -26,7 +26,7 @@ export default function App() {
             </Menu.Item>
           </Menu>
         </Header>
-        <Content>
+        <Content className="page-content">
           <Switch>
             <Route path="/new">
               <New />
