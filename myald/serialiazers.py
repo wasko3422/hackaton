@@ -25,7 +25,9 @@ class CarSerializer:
             'contract_id': car.contract.id,
             'car_id': car.id,
             'car_make': car.model.make,
+            'car_model': car.model.model,
             'car_logo_url': car.model.logo,
+            'car_license_plate': car.license_plate_number,
             'car_last_service': {
                 'mileage': car.last_service_mileage,
                 'date': car.last_service_date,

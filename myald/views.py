@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from hackaton.settings import ALDAVAR, EMAIL_HOST_USER
 from datetime import timedelta
+from dateutil import parser
 
 
 
@@ -104,6 +105,9 @@ class CreateOrderView(APIView):
         mileage = data.get('mileage')
         part_of_day_expected = data.get('part_of_day_expected')
         date_expected = data.get('date_expected')
+
+        if date_expected:
+            date_expected = parser.parse(date_expected)
 
         if not (job_types and mileage and part_of_day_expected and date_expected and dealer):
             send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR])
