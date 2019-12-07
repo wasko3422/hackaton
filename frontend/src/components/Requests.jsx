@@ -1,4 +1,6 @@
 import React from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
 
 import { Table } from 'antd';
 
@@ -94,6 +96,26 @@ function onChange(pagination, filters, sorter, extra) {
   console.log('params', pagination, filters, sorter, extra);
 }
 
-export const Requests = () => {
+const Requests = ({ requests, dispatch, clientId }) => {
+  function getRequests() {
+    return (dispatch) => {
+      axios.get(`/orders?client_id=${clientId}`).then((res) =>
+        dispatch({
+          type: 'FETCH_REQUESTS',
+          payload: res.data || [],
+        })
+      );
+    };
+  }
+
+  React.useEffect(() => {
+    dispatch(getRequests());
+  }, []);
+
   return <Table columns={columns} dataSource={data} onChange={onChange} />;
 };
+
+export default connect((state) => ({
+  requests: state.requests,
+  clientId: state.client.id,
+}))(Requests);

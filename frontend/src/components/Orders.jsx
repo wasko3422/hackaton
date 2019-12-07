@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
-import { Requests } from './Requests';
+import Requests from './Requests';
 import { CompleteOrders } from './CompleteOrders';
 
 const { Title } = Typography;
