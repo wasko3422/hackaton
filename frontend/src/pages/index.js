@@ -1,6 +1,8 @@
 import React from 'react';
 import { Button, Tabs, Icon } from 'antd';
 import { Link } from 'react-router-dom';
+import { Cars } from '../components/Cars';
+import { Orders } from '../components/Orders';
 import './index.css';
 
 const { TabPane } = Tabs;
@@ -35,7 +37,11 @@ const Index = () => (
           </div>
         }
         key="1"
-      />
+      >
+        <div className="tab-content">
+          <Cars />
+        </div>
+      </TabPane>
       <TabPane
         tab={
           <div className="tab">
@@ -44,19 +50,12 @@ const Index = () => (
           </div>
         }
         key="2"
-      />
+      >
+        <div className="tab-content">
+          <Orders />
+        </div>
+      </TabPane>
     </Tabs>
-
-    <div
-      style={{
-        background: '#fff',
-        padding: 24,
-        minHeight: 280,
-        marginTop: -16,
-      }}
-    >
-      Content
-    </div>
   </>
 );
 
