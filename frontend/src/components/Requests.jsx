@@ -100,7 +100,7 @@ function onChange(pagination, filters, sorter, extra) {
 
 function getRequests(clientId) {
   return (dispatch) => {
-    axios.get(`/orders?client_id=${clientId}`).then((res) =>
+    axios.get(`/get-orders?client_id=${clientId}`).then((res) =>
       dispatch({
         type: 'FETCH_REQUESTS',
         payload: res.data || [],
