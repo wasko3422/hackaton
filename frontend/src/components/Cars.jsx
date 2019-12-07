@@ -16,12 +16,10 @@ import {
 import { connect } from 'react-redux';
 const { Meta } = Card;
 
-const Cars = ({ cars, dispatch }) => {
-  console.log(cars, dispatch);
-
+const Cars = ({ cars, dispatch, clientId }) => {
   function getCars() {
     return (dispatch) => {
-      axios.get('/get-cars?client_id=1').then((res) =>
+      axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
         dispatch({
           type: 'FETCH_CARS',
           payload: res.data || [],
@@ -108,4 +106,7 @@ const Cars = ({ cars, dispatch }) => {
   );
 };
 
-export default connect((state) => ({ cars: state.cars }))(Cars);
+export default connect((state) => ({
+  cars: state.cars,
+  clientId: state.client.id,
+}))(Cars);
