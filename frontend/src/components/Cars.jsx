@@ -1,30 +1,110 @@
 import React from 'react';
-import { Card, Col, Row, Avatar, Divider } from 'antd';
-import BMW from './BMW.png';
+import axios from 'axios';
+import _ from 'lodash';
+import {
+  Card,
+  Col,
+  Row,
+  Avatar,
+  Divider,
+  Skeleton,
+  Empty,
+  Timeline,
+  Icon,
+} from 'antd';
+
 import { connect } from 'react-redux';
 const { Meta } = Card;
 
-const Cars = ({ cars }) => {
-  console.log(cars);
+const Cars = ({ cars, dispatch }) => {
+  console.log(cars, dispatch);
+
+  function getCars() {
+    return (dispatch) => {
+      axios.get('/get-cars?client_id=1').then((res) =>
+        dispatch({
+          type: 'FETCH_CARS',
+          payload: res.data || [],
+        })
+      );
+    };
+  }
+
+  React.useEffect(() => {
+    dispatch(getCars());
+  }, []);
+
+  if (!cars) {
+    return (
+      <Row gutter={16}>
+        <Col span={8}>
+          <Card>
+            <Skeleton avatar active paragraph={{ rows: 4 }} />
+          </Card>
+        </Col>
+      </Row>
+    );
+  }
+
+  if (!cars.length) {
+    return (
+      <Row gutter={16}>
+        <Col span={24}>
+          <Empty />
+        </Col>
+      </Row>
+    );
+  }
+
   return (
-    <Row gutter={16}>
-      <Col span={8}>
-        <Card>
-          <Meta
-            avatar={<Avatar shape="square" size="large" src={BMW} />}
-            title="BMW X5"
-            description="Контракт 0935647"
-          />
-          <Divider>Техническое обслуживание</Divider>
-        </Card>
-      </Col>
-      <Col span={8}>
-        <Card title="Card title">Card content</Card>
-      </Col>
-      <Col span={8}>
-        <Card title="Card title">Card content</Card>
-      </Col>
-    </Row>
+    <>
+      {_.chunk(cars, 3).map((chunk) => {
+        return (
+          <Row gutter={16}>
+            {chunk.map((car) => {
+              return (
+                <Col span={8}>
+                  <Card>
+                    <Meta
+                      avatar={
+                        <Avatar
+                          shape="square"
+                          size="large"
+                          src={car.car_logo_url}
+                        />
+                      }
+                      title={car.car_make}
+                      description={`Контракт ${car.contract_id}`}
+                    />
+                    <Divider style={{ margin: '40px 0' }}>
+                      Техническое обслуживание
+                    </Divider>
+                    <Timeline pending=" " pendingDot={<Icon type="tool" />}>
+                      <Timeline.Item
+                        dot={
+                          <Icon
+                            type="clock-circle-o"
+                            style={{ fontSize: '16px' }}
+                          />
+                        }
+                        color="red"
+                      >
+                        <p>Следующее 2015-09-01</p>
+                        <p>Пробег 20000 км</p>
+                      </Timeline.Item>
+                      <Timeline.Item>
+                        <p>Последнее 2015-09-01</p>
+                        <p>Пробег 10000 км</p>
+                      </Timeline.Item>
+                    </Timeline>
+                  </Card>
+                </Col>
+              );
+            })}
+          </Row>
+        );
+      })}
+    </>
   );
 };
 
