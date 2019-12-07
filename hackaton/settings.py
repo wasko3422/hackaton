@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'myald.apps.MyaldConfig'
+    'myald.apps.MyaldConfig',
+    'mailer.apps.MailerConfig'
 ]
 
 MIDDLEWARE = [
@@ -142,8 +143,8 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, "../", "frontend", "build", "root")
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'your_account@gmail.com'
-EMAIL_HOST_PASSWORD = 'your account’s password'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = 'aldavar2019@mail.ru'
+EMAIL_HOST_PASSWORD = 'IslandPilots'
