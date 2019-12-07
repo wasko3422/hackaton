@@ -162,7 +162,7 @@ ADMIN_REORDER =  (
     {
         'app':'myald', 
         'label': 'Управление контентом',
-        'models': ('myald.Dealer', 'myald.Contract')
+        'models': ('myald.Dealer', 'myald.DealersModels', 'myald.City', 'myald.JobType')
     },
     {
         'app':'myald', 
