@@ -1,11 +1,5 @@
-.sidebar {
-  position: absolute;
-  width: 33.3333%;
+.spin-wrapper {
   height: 100%;
-  top: 0;
-  left: 0;
-  overflow: hidden;
-  border-right: 1px solid rgba(0, 0, 0, 0.25);
 }
 
 .list {

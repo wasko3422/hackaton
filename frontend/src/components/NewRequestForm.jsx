@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
 import { Form, Input, DatePicker, Radio, Button, Row } from 'antd';
-
-import { CustomSelect, UserRemoteSelect } from '../components/Selects';
+import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
-import DillersMap from './DilersMap/DillersMap';
+import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
 
 const { TextArea } = Input;
 
@@ -21,7 +22,37 @@ const formItemLayout = {
   },
 };
 
+function getCityCoords(query, accessToken) {
+  return (dispatch) => {
+    axios
+      .get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?limit=1&access_token=${accessToken}`
+      )
+      .then((res) =>
+        dispatch({
+          type: 'FETCH_CITY_COORDS',
+          payload: res.data || [],
+        })
+      );
+  };
+}
+
+function getCities() {
+  return (dispatch) => {
+    axios.get('/get-cities').then((res) =>
+      dispatch({
+        type: 'FETCH_CITIES',
+        payload: res.data || [],
+      })
+    );
+  };
+}
+
 class NewRequestForm extends Component {
+  componentDidMount() {
+    this.props.dispatch(getCities());
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { validateFields } = this.props.form;
@@ -40,52 +71,51 @@ class NewRequestForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { cities, cityCoords } = this.props;
+
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
-        <Form.Item label="Укажите гос. номер автомобиля" required>
+        <Form.Item label="Выберите автомобиль" required>
           {getFieldDecorator('carNumber', {
             rules: [
               {
                 required: true,
-                message: 'Введите номер автомобиля',
+                message: 'Обязательное поле',
               },
             ],
-          })(
-            <CustomSelect
-              placeholder="x000xx"
-              options={[
-                'A000AA',
-                'B000BB',
-                'C345CC',
-                'X304YH',
-                'B777OP',
-                'B302PY',
-                'C567PY',
-                'O111BH',
-              ]}
-              size="large"
-            />
-          )}
+          })(<CustomSelect options={[]} size="large" />)}
         </Form.Item>
         <Form.Item label="Выберите город обслуживания" required>
           {getFieldDecorator('city', {
             rules: [
               {
                 required: true,
-                message: 'Введите название города',
+                message: 'Обязательное поле',
               },
             ],
           })(
-            <UserRemoteSelect
+            <CustomSelect
               placeholder="Город"
-              options={['Москва', 'Питер']}
+              options={
+                cities
+                  ? cities.map(({ city_id, city_name }) => ({
+                      value: city_id,
+                      label: city_name,
+                    }))
+                  : []
+              }
               size="large"
+              onChange={(label) => {
+                this.props.dispatch(getCityCoords(label, ACCESS_TOKEN));
+              }}
             />
           )}
         </Form.Item>
-        <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
-          <DillersMap />
-        </Form.Item>
+        {cityCoords && cityCoords.features[0] && (
+          <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
+            <DealersMap />
+          </Form.Item>
+        )}
         <Form.Item label="Укажите текущий пробег автомобиля">
           {getFieldDecorator('kilometrage')(
             <Input
@@ -148,4 +178,10 @@ class NewRequestForm extends Component {
     );
   }
 }
-export default Form.create({ name: 'request' })(NewRequestForm);
+const CreatedForm = Form.create({ name: 'request' })(NewRequestForm);
+
+export default connect((state) => ({
+  cities: state.cities,
+  cityCoords: state.cityCoords,
+  clientId: state.client.id,
+}))(CreatedForm);
