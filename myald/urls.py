@@ -9,4 +9,6 @@ urlpatterns = [
     path('get-jobs', views.JobTypesView.as_view()),
     path('get-dealers', views.DealersView.as_view()),
     path('create-order', views.CreateOrderView.as_view()),
+    path('get-orders', views.OrdersView.as_view()),
+    path('get-jobs-done', views.JobsDoneView.as_view())
 ]

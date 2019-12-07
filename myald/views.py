@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from myald import serialiazers
-from .models import Client, Car, Dealer, Order, Contract, City
+from .models import Client, Car, Dealer, Order, Contract, City, JobType, OrdersJobType, JobsDone
 from rest_framework.views import APIView
 
 
@@ -78,18 +78,53 @@ class CreateOrderView(APIView):
         order = Order(
             contract=contract, client=client, city=city, 
             dealer=dealer, comment=data.get('comment', ''), 
-            date_exptected=data.get('date_expected', None),
-            part_of_day_expected=date.get('part_of_day_expected', '1'))
+            date_expected=data.get('date_expected', None),
+            part_of_day_expected=data.get('part_of_day_expected', '1'),
+            mileage=data.get('mileage', None), status=data.get('status', 'created'))
 
         order.save()
+
+        job_types = data.get('job_types', [])
+
+        for i in job_types:
+            job_type = get_or_none(JobType, id=i)
+            if job_type:
+                ojm = OrdersJobType(
+                    order=order,
+                    job_type=job_type,
+                )
+                ojm.save()
+
         return HttpResponse(status=status.HTTP_200_OK)
+
+
+class OrdersView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        client_id = request.GET.get('client_id')
+
+        orders = Order.objects.filter(client_id=client_id)
+
+        if not orders:
+            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
+
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+
+class JobsDoneView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        client_id = request.GET.get('client_id')
+
+        jobs = JobsDone.objects.filter(client_id=client_id)
+
+        if not jobs:
+            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-
-
-
-
-
-
+        result = [serialiazers.JobsDoneSerializer().serialize(i) for i in jobs]
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
 
 def get_or_none(model, *args, **kwargs):
