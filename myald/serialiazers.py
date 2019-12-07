@@ -55,3 +55,13 @@ class DealersSerializer:
             'address': dealer.address,
             'is_priority': dealer.is_priority,
         }
+
+
+class OrderSerializer:
+
+    def serialize(self, order):
+        pass
+
+
+    def deserialize(self, data):
+        pass

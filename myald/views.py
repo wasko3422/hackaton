@@ -1,8 +1,8 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from myald import serialiazers
-from .models import Client, Car, Dealer
+from .models import Client, Car, Dealer, Order, Contract, City
 from rest_framework.views import APIView
 
 
@@ -31,11 +31,11 @@ class CarsView(APIView):
     def get(self, request, *args, **kwargs):
         client_id = request.GET.get('client_id')
         try:
-            car = Car.objects.get(contract__client__id=client_id)
+            cars = Car.objects.filter(contract__client__id=client_id)
         except Exception as e:
             return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        result = serialiazers.CarSerializer().serialize(car)
-        return JsonResponse(result, status=status.HTTP_200_OK)
+        result = list([serialiazers.CarSerializer().serialize(i) for i in cars])
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
 
 
@@ -64,10 +64,25 @@ class CreateOrderView(APIView):
     def post(self, request):
         data = request.data
 
-        client_id, car_id, city_id, dealer_id = data.get('client_id'), data.get('car_id'), data.get('city_id'), data.get('dealer_id'),
-        client = get_or_none(Client, id=data.get('client_id', ''))
-        if not client:
-            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        client_id, contract_id, city_id, dealer_id = data.get('client_id'), data.get('contract_id'), data.get('city_id'), data.get('dealer_id')
+        if not (client_id and contract_id and city_id):
+            return JsonResponse({"error": "No car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        client = get_or_none(Client, id=client_id)
+        contract = get_or_none(Contract, id=contract_id)
+        city = get_or_none(City, id=city_id)
+        dealer = get_or_none(Dealer, id=dealer_id)
+
+        if not (client, contract, city):
+            return JsonResponse({"error": "Uknown car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        order = Order(
+            contract=contract, client=client, city=city, 
+            dealer=dealer, comment=data.get('comment', ''), 
+            date_exptected=data.get('date_expected', None),
+            part_of_day_expected=date.get('part_of_day_expected', '1'))
+
+        order.save()
+        return HttpResponse(status=status.HTTP_200_OK)
         
 
 
