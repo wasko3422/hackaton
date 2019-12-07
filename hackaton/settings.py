@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'hackaton.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.sqlite3")),
-        "USER": os.environ.get("SQL_USER", "user"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
-        "HOST": os.environ.get("SQL_HOST", "localhost"),
+        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.environ.get("SQL_DATABASE", "myalddb"),
+        "USER": os.environ.get("SQL_USER", "valentin@myald"),
+        "PASSWORD": os.environ.get("SQL_PASSWORD", "george!9871#"),
+        "HOST": os.environ.get("SQL_HOST", "myald.postgres.database.azure.com"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
     }
 }
@@ -162,7 +162,7 @@ ADMIN_REORDER =  (
     {
         'app':'myald', 
         'label': 'Управление контентом',
-        'models': ('myald.Dealer', 'myald.Contract')
+        'models': ('myald.Dealer', 'myald.DealersModels', 'myald.City', 'myald.JobType')
     },
     {
         'app':'myald', 

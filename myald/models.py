@@ -40,9 +40,16 @@ class Car(ModelTimestamps):
     next_service_mileage = models.IntegerField(null=True, blank=True)
     next_service_date = models.DateTimeField(null=True, blank=True)
 
+    def __init__(self):
+        return self.license_plate_number
+
 
 class City(models.Model):
     name = models.CharField(max_length=128)
+
+    class Meta:
+
+        verbose_name_plural = 'Cities'
 
     def __str__(self):
         return self.name
@@ -64,6 +71,10 @@ class Dealer(ModelTimestamps):
 class DealersModels(ModelTimestamps):
     dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, related_name='dealers_models')
     model = models.OneToOneField(Model, on_delete=models.PROTECT)
+
+    class Meta:
+
+        verbose_name_plural = 'Dealers Models'
 
 
 class Contract(ModelTimestamps):
@@ -129,3 +140,7 @@ class JobsDone(ModelTimestamps):
     contract = models.ForeignKey(Contract, on_delete=models.PROTECT)
     mileage = models.IntegerField()
     date = models.DateTimeField()
+
+    class Meta:
+
+        verbose_name_plural = 'Jobs Done'
