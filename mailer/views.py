@@ -11,8 +11,6 @@ def email(request):
     subject = 'test'
     message = 'test'
     recipient_list = ['panow.egor2018@gmail.com']
-
-    print(settings.EMAIL_HOST_USER)
     
     send_mail(subject, message, settings.EMAIL_HOST_USER, recipient_list)
 

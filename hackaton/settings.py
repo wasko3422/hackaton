@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'myald.apps.MyaldConfig',
-    'mailer.apps.MailerConfig'
+    'mailer.apps.MailerConfig',
+    'admin_reorder'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'hackaton.urls'
@@ -132,14 +134,14 @@ INSTALLED_APPS.extend(["whitenoise.runserver_nostatic"])
 # Must insert after SecurityMiddleware, which is first in settings/common.py
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
-TEMPLATES[0]["DIRS"] = [os.path.join(BASE_DIR, "../", "frontend", "build")]
+TEMPLATES[0]["DIRS"] = [os.path.join(BASE_DIR, "frontend", "build")]
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "../", "frontend", "build", "static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "frontend", "build", "static")]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 STATIC_URL = "/static/"
-WHITENOISE_ROOT = os.path.join(BASE_DIR, "../", "frontend", "build", "root")
+WHITENOISE_ROOT = os.path.join(BASE_DIR, "frontend", "build", "root")
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -148,3 +150,23 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 2525
 EMAIL_HOST_USER = 'aldavar2019@mail.ru'
 EMAIL_HOST_PASSWORD = 'IslandPilots'
+
+
+ADMIN_REORDER =  (
+    'sites',
+    {
+        'app':'myald', 
+        'label': 'Эмуляция АЛДАВАР',
+        'models': ('myald.Client', 'myald.Contract', 'myald.Car', 'myald.Model', 'myald.JobsDone')
+    },
+    {
+        'app':'myald', 
+        'label': 'Управление контентом',
+        'models': ('myald.Dealer', 'myald.Contract')
+    },
+    {
+        'app':'myald', 
+        'label': 'Управление заявками',
+        'models': ('myald.Order',)
+    }
+)

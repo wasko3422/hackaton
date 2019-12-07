@@ -11,14 +11,11 @@ class ModelTimestamps(models.Model):
 
 
 class Client(ModelTimestamps):
-    phone = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
     email = models.CharField(max_length=256, blank=True)
-    first_name = models.CharField(max_length=64)
-    middle_name = models.CharField(max_length=64, blank=True)
-    last_name = models.CharField(max_length=64)
 
     def __str__(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return self.name
 
 
 class Model(ModelTimestamps):
@@ -36,6 +33,7 @@ class Car(ModelTimestamps):
     model = models.ForeignKey(Model, on_delete=models.PROTECT, related_name='cars')
     license_plate_number = models.CharField(max_length=128)
     sold_at = models.DateTimeField()
+    vin = models.CharField(max_length=64, db_index=True)
 
     last_service_mileage = models.IntegerField(null=True, blank=True)
     last_service_date = models.DateTimeField(null=True, blank=True)
@@ -53,6 +51,9 @@ class City(models.Model):
 class Dealer(ModelTimestamps):
     name = models.CharField(max_length=256)
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name="dealers")
+    lattitude = models.FloatField()
+    longtitude = models.FloatField()
+    email = models.CharField(max_length=128)
     is_priority = models.BooleanField()
     address = models.CharField(max_length=256)
 
@@ -87,7 +88,11 @@ class Order(ModelTimestamps):
     client = models.OneToOneField(Client, on_delete=models.PROTECT)
     dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, null=True, blank=True)
     city = models.OneToOneField(City, on_delete=models.PROTECT)
-    comment = models.CharField(max_length=512, blank=True)
+    phone = models.CharField(max_length=32)
+    email = models.CharField(max_length=64)
+    first_name = models.CharField(max_length=32)
+    last_name = models.CharField(max_length=32)
+    comment = models.CharField(max_length=512, blank=True, null=True)
     mileage = models.IntegerField(blank=True, null=True)
     date_expected = models.DateTimeField(null=True)
     part_of_day_expected = models.CharField(max_length=1, choices=COMBINATIONS)
@@ -124,4 +129,3 @@ class JobsDone(ModelTimestamps):
     contract = models.ForeignKey(Contract, on_delete=models.PROTECT)
     mileage = models.IntegerField()
     date = models.DateTimeField()
-    jobs = JSONField()
