@@ -17,42 +17,57 @@ class Client(ModelTimestamps):
     middle_name = models.CharField(max_length=64, blank=True)
     last_name = models.CharField(max_length=64)
 
+    def __str__(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
 
 class Model(ModelTimestamps):
     make = models.CharField(max_length=128)
     model = models.CharField(max_length=128)
     maintaince_kms = models.IntegerField()
     maintaince_years = models.IntegerField()
+    logo = models.CharField(max_length=256)
+
+    def __str__(self):
+        return '{} - {}'.format(self.model, self.make)
 
 
 class Car(ModelTimestamps):
-    model = models.ForeignKey(Model, on_delete=models.PROTECT)
+    model = models.ForeignKey(Model, on_delete=models.PROTECT, related_name='cars')
     license_plate_number = models.CharField(max_length=128)
     sold_at = models.DateTimeField()
+
+    last_service_mileage = models.IntegerField(null=True, blank=True)
+    last_service_date = models.DateTimeField(null=True, blank=True)
+    next_service_mileage = models.IntegerField(null=True, blank=True)
+    next_service_date = models.DateTimeField(null=True, blank=True)
 
 
 class City(models.Model):
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class Dealer(ModelTimestamps):
+    name = models.CharField(max_length=256)
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name="dealers")
     is_priority = models.BooleanField()
     address = models.CharField(max_length=256)
 
+    def __str__(self):
+        return self.name
+
 
 class DealersModels(ModelTimestamps):
-    dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT)
+    dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, related_name='dealers_models')
     model = models.OneToOneField(Model, on_delete=models.PROTECT)
 
 
 class Contract(ModelTimestamps):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="contracts")
-    car = models.OneToOneField(Car, on_delete=models.PROTECT)
-
-
-class OrdersJobType(models.Model):
-    pass
+    car = models.OneToOneField(Car, on_delete=models.PROTECT, related_name='contract')
 
 
 class Order(ModelTimestamps):
@@ -72,12 +87,24 @@ class Order(ModelTimestamps):
     part_of_day_expected = models.CharField(max_length=1, choices=COMBINATIONS)
     is_auto_sending = models.BooleanField(default=False)
     sent_at = models.DateTimeField(null=True)
-    order_job_types = models.ForeignKey(OrdersJobType, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.id
 
 
 class JobType(models.Model):
     name = models.CharField(max_length=64)
-    order_job_types = models.ForeignKey(OrdersJobType, on_delete=models.PROTECT)
+    is_main_service = models.BooleanField()
+
+
+    def __str__(self):
+        return self.name
+
+
+class OrdersJobType(models.Model):
+    job_type = models.ForeignKey(JobType, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+
 
 class JobsDone(ModelTimestamps):
     car = models.ForeignKey(Car, on_delete=models.PROTECT)
