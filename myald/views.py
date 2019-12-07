@@ -63,12 +63,9 @@ class DealersView(APIView):
     def get(self, request, *args, **kwargs):
         city_id = request.GET.get('city_id')
         car_id = request.GET.get('car_id')
-        try:
-            dealer = Dealer.objects.get(dealers_models__model__cars__id=car_id, city__id=city_id)
-        except Exception as e:
-            return JsonResponse({"error": "Unknown dealer"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        result = serialiazers.DealersSerializer().serialize(dealer)
-        return JsonResponse(result, status=status.HTTP_200_OK)
+        dealers = Dealer.objects.filter(dealers_models__model__cars__id=car_id, city__id=city_id)
+        result = [serialiazers.DealersSerializer().serialize(i) for i in dealers]
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
 
 class CreateOrderView(APIView):
