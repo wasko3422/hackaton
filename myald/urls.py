@@ -7,5 +7,6 @@ urlpatterns = [
     path('get-cities', views.CitiesView.as_view()),
     path('get-cars', views.CarsView.as_view()),
     path('get-jobs', views.JobTypesView.as_view()),
-    path('get-dealers', views.DealersView.as_view())
+    path('get-dealers', views.DealersView.as_view()),
+    path('create-order', views.CreateOrderView.as_view()),
 ]
