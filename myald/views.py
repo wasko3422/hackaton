@@ -121,15 +121,33 @@ class CreateOrderView(APIView):
                 ojm.save()
 
         if not is_main_service:
-            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR, dealer.email])
+            order.status = 'sent'
+            order.is_auto_sending = True
+            order.save()
+            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email, ALDAVAR, dealer.email])
             return HttpResponse(status=status.HTTP_200_OK)
 
         car = contract.car
 
         if car.next_service_mileage and car.next_service_date:
+            if order.date_expected >= car.next_service_date - timedelta(days=30) or \
+                        (order.mileage >= car.next_service_mileage - 500 and order.mileage <= car.next_service_mileage + 500):
+                order.status = 'sent'
+                order.is_auto_sending = True
+                order.save()
+                send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email, ALDAVAR, dealer.email])
+                return HttpResponse(status=status.HTTP_200_OK)
 
-            if order.date_expected >= car.next_service_date - timedelta(days=30) or order.mileage:
-                pritn()
+            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email, ALDAVAR])
+            return HttpResponse(status=status.HTTP_200_OK)
+        model = car.model
+        if  order.date_expected >= car.sold_at + timedelta(days=365*model.maintaince_years - 30) \
+            or (order.mileage >= model.maintaince_kms - 500 and order.mileage <= model.maintaince_kms + 500):
+            order.status = 'sent'
+            order.is_auto_sending = True
+            order.save()
+            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email,ALDAVAR, dealer.email])
+        send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR])
         return HttpResponse(status=status.HTTP_200_OK)
 
 
@@ -138,24 +156,89 @@ class OrdersView(APIView):
     def get(self, request, *args, **kwargs):
         client_id = request.GET.get('client_id')
 
-        orders = Order.objects.filter(client_id=client_id)
-        result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
+        if client_id:
+            orders = Order.objects.filter(client_id=client_id)
+            result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+        else:
+            contract_id = request.GET.get('contract_id')
+            try:
+                order = Order.objects.get(contract__id=contract_id)
+            except Exception as e:
+                return JsonResponse({"error": "Unknown contract"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+            result = [serialiazers.OrderSerializer().serialize(order)]
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
+        return JsonResponse({"error": "Unknown param"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
 
 class JobsDoneView(APIView):
 
     def get(self, request, *args, **kwargs):
         client_id = request.GET.get('client_id')
 
-        jobs = JobsDone.objects.filter(client_id=client_id)
+        if client_id:
+            jobs = JobsDone.objects.filter(client_id=client_id)
+            result = [serialiazers.JobsDoneSerializer().serialize(i) for i in jobs]
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+        else: 
+            contract_id = request.GET.get('contract_id')
+            try:
+                jobs = JobsDone.objects.get(contract__id=contract_id)
+            except Exception as e:
+                return JsonResponse({"error": "Unknown contract"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if not jobs:
-            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            result = [serialiazers.JobsDoneSerializer().serialize(jobs)]
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+        return JsonResponse({"error": "Unknown param"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+
+
+
+class UpdateOrderView(APIView):
+
+    def post(self, request):
+        data = request.data
+        order_id,  = data.get('order_id')
+        s = data.get('sent_mail', False)
+        data.pop('jobs')
+        order = get_or_none(Order, id=order_id)
+
+        if not order:
+            return JsonResponse({"error": "Unknown order"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        order.update(**data)
+        order.save()
+
+        if s:
+            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [ALDAVAR, dealer.email])
+
+        return HttpResponse(status=status.HTTP_200_OK)
         
-        result = [serialiazers.JobsDoneSerializer().serialize(i) for i in jobs]
+
+class DeleteOrderView(APIView):
+    def get(self, request, *args, **kwargs):
+        order_id = request.GET.get('order_id')
+        order = get_or_none(Order, id=order_id)
+        if order:
+            order.delete()
+        return HttpResponse(status=status.HTTP_200_OK)
+
+
+
+class AllOrdersView(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        orders = Order.objects.all()
+
+        result = [serialiazers.AnotherOrderSerializer().serialize(i) for i in orders]
         return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+
+#TODO auth
+def login(request):
+    return HttpResponse(status=status.HTTP_200_OK)
 
 
 def get_or_none(model, *args, **kwargs):

@@ -102,3 +102,33 @@ class JobsDoneSerializer:
                 'date': job.date,
             }
         }
+
+
+class AnotherOrderSerializer:
+
+    def serialize(self, order):
+        jobs = [{'job_name': i.job_type.name, 'job_id': i.id} for i in order.jobs.all()]
+        
+        return {
+            'order_id': order.id,
+            'contract_id': order.contract.id,
+            'car': {
+                'make': order.contract.car.model.make,
+                'model': order.contract.car.model.model,
+                'car_license_plate': order.contract.car.license_plate_number,
+            },
+            'order': {
+                'mileage': order.mileage,
+                'jobs': jobs,
+                'dealer_name': order.dealer.name,
+                'created_at': order.created_at,
+                'date_expected': order.date_expected,
+                'status': order.status,
+                'contacts': {
+                    'name': order.first_name,
+                    'surname': order.last_name,
+                    'phone': order.phone,
+                    'email': order.email,
+                }
+            }
+        }
