@@ -4,93 +4,39 @@ import React from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
-import { Table } from 'antd';
+import { Table, Tag } from 'antd';
 
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    filters: [
-      {
-        text: 'Joe',
-        value: 'Joe',
-      },
-      {
-        text: 'Jim',
-        value: 'Jim',
-      },
-      {
-        text: 'Submenu',
-        value: 'Submenu',
-        children: [
-          {
-            text: 'Green',
-            value: 'Green',
-          },
-          {
-            text: 'Black',
-            value: 'Black',
-          },
-        ],
-      },
-    ],
-    defaultFilterValues: ['Jim'],
-    // specify the condition of filtering result
-    // here is that finding the name started with `value`
-    onFilter: (value, record) => record.name.indexOf(value) === 0,
-    sorter: (a, b) => a.name.length - b.name.length,
-    sortDirections: ['descend'],
+    title: 'ID',
+    dataIndex: 'order_id',
+    sorter: (a, b) => a - b,
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
+    title: 'Автомобиль',
+    dataIndex: 'car.car_license_plate',
     defaultSortOrder: 'descend',
     sorter: (a, b) => a.age - b.age,
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    filters: [
-      {
-        text: 'London',
-        value: 'London',
-      },
-      {
-        text: 'New York',
-        value: 'New York',
-      },
-    ],
-    filterMultiple: false,
-    onFilter: (value, record) => record.address.indexOf(value) === 0,
-    sorter: (a, b) => a.address.length - b.address.length,
-    sortDirections: ['descend', 'ascend'],
-  },
-];
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
+    title: 'Пробег',
+    dataIndex: 'order.mileage',
   },
   {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Jim Red',
-    age: 32,
-    address: 'London No. 2 Lake Park',
+    title: 'Перечень работ',
+    dataIndex: 'order.jobs',
+    render: (jobs, _, index) => {
+      if (!jobs.length) {
+        return <span>-</span>;
+      }
+      return (
+        <span key={index}>
+          {jobs.map((job) => {
+            return <Tag key={job}>{job.toUpperCase()}</Tag>;
+          })}
+        </span>
+      );
+    },
   },
 ];
 
@@ -116,7 +62,7 @@ const Requests = ({ requests, dispatch, clientId }) => {
 
   console.log('requests', requests);
 
-  return <Table columns={columns} dataSource={data} onChange={onChange} />;
+  return <Table columns={columns} dataSource={requests} onChange={onChange} />;
 };
 
 export default connect((state) => ({
