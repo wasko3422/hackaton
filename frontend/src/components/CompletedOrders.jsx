@@ -98,12 +98,12 @@ function onChange(pagination, filters, sorter, extra) {
   console.log('params', pagination, filters, sorter, extra);
 }
 
-const Requests = ({ requests, dispatch, clientId }) => {
-  function getRequests() {
+const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
+  function getCompletedOrders() {
     return (dispatch) => {
-      axios.get(`/orders?client_id=${clientId}`).then((res) =>
+      axios.get(`/get-jobs-done?client_id=${clientId}`).then((res) =>
         dispatch({
-          type: 'FETCH_REQUESTS',
+          type: 'FETCH_COMPLETED_ORDERS',
           payload: res.data || [],
         })
       );
@@ -111,15 +111,15 @@ const Requests = ({ requests, dispatch, clientId }) => {
   }
 
   React.useEffect(() => {
-    dispatch(getRequests());
-  }, []);
+    dispatch(getCompletedOrders());
+  }, []); // eslint-disable react-hooks/exhaustive-deps
 
-  console.log('requests', requests);
+  console.log('completedOrders', completedOrders);
 
   return <Table columns={columns} dataSource={data} onChange={onChange} />;
 };
 
 export default connect((state) => ({
-  requests: state.requests,
+  completedOrders: state.completedOrders,
   clientId: state.client.id,
-}))(Requests);
+}))(CompletedOrders);

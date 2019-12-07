@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -58,10 +60,10 @@ const Cars = ({ cars, dispatch, clientId }) => {
     <>
       {_.chunk(cars, 3).map((chunk) => {
         return (
-          <Row gutter={16}>
+          <Row gutter={16} key={chunk.map(({ car_id }) => car_id).join('-')}>
             {chunk.map((car) => {
               return (
-                <Col span={8}>
+                <Col span={8} key={car.car_id}>
                   <Card>
                     <Meta
                       avatar={

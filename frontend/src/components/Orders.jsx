@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
 import Requests from './Requests';
-import { CompleteOrders } from './CompleteOrders';
+import CompletedOrders from './CompletedOrders';
 
 const { Title } = Typography;
 
@@ -13,7 +13,7 @@ export const Orders = () => (
     </div>
     <div>
       <Title level={3}>Выполненные заказы</Title>
-      <CompleteOrders />
+      <CompletedOrders />
     </div>
   </>
 );
