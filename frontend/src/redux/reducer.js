@@ -1,17 +1,8 @@
 import { combineReducers } from 'redux';
-
-function clientReducer(
-  state = {
-    id: 1,
-  },
-  action = {}
-) {
-  switch (action.type) {
-    default:
-      return state;
-  }
-}
+import { client } from './reducers/client';
+import { cars } from './reducers/cars';
 
 export default combineReducers({
-  client: clientReducer,
+  client,
+  cars,
 });

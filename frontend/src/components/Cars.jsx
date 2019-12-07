@@ -1,9 +1,11 @@
 import React from 'react';
 import { Card, Col, Row, Avatar, Divider } from 'antd';
 import BMW from './BMW.png';
+import { connect } from 'react-redux';
 const { Meta } = Card;
 
-export const Cars = () => {
+const Cars = ({ cars }) => {
+  console.log(cars);
   return (
     <Row gutter={16}>
       <Col span={8}>
@@ -25,3 +27,5 @@ export const Cars = () => {
     </Row>
   );
 };
+
+export default connect((state) => ({ cars: state.cars }))(Cars);

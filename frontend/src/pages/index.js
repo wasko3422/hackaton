@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Tabs, Icon } from 'antd';
 import { Link } from 'react-router-dom';
-import { Cars } from '../components/Cars';
+import Cars from '../components/Cars';
 import { Orders } from '../components/Orders';
 import './index.css';
 
