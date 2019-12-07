@@ -21,25 +21,26 @@ const formItemLayout = {
 };
 
 class NewRequestForm extends Component {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { validateFields } = this.props.form;
+
+    validateFields((err, fieldsValue) => {
+      if (err) {
+        return;
+      }
+      const values = {
+        ...fieldsValue,
+        date: fieldsValue['date'].format('YYYY-MM-DD'),
+      };
+      console.log('Received values of form: ', values);
+    });
+  };
+
   render() {
-    const { getFieldDecorator, validateFields } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     return (
-      <Form
-        {...formItemLayout}
-        onSubmit={(e) => {
-          e.preventDefault();
-          validateFields((err, fieldsValue) => {
-            if (err) {
-              return;
-            }
-            const values = {
-              ...fieldsValue,
-              date: fieldsValue['date'].format('YYYY-MM-DD'),
-            };
-            console.log('Received values of form: ', values);
-          });
-        }}
-      >
+      <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Укажите гос. номер автомобиля" required>
           {getFieldDecorator('carNumber', {
             rules: [
