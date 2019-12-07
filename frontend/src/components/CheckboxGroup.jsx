@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox } from 'antd';
+import { Checkbox, Row } from 'antd';
 
 export class CheckboxGroup extends React.Component {
   state = {
@@ -44,12 +44,16 @@ export class CheckboxGroup extends React.Component {
             <br />
           </div>
         )}
-        {getFieldDecorator(name)(
-          <Checkbox.Group
-            options={this.props.options}
-            value={this.state.checkedList}
-            onChange={this.onChange}
-          />
+        {getFieldDecorator(name, { setFieldsValue: this.state.checkedList })(
+          <Checkbox.Group onChange={this.onChange}>
+            {this.props.options.map((option) => (
+              <Row key={option} style={{ marginBottom: '0.5em' }}>
+                <Checkbox value={option} style={{ fontSize: '16px' }}>
+                  {option}
+                </Checkbox>
+              </Row>
+            ))}
+          </Checkbox.Group>
         )}
       </div>
     );
