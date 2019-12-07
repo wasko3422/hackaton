@@ -74,7 +74,8 @@ class CreateOrderView(APIView):
         data = request.data
 
         client_id, contract_id, city_id, dealer_id = data.get('client_id'), data.get('contract_id'), data.get('city_id'), data.get('dealer_id')
-        if not (client_id and contract_id and city_id):
+        name, surname, phone, email = data.get('name'), data.get('surname'), data.get('phone'), data.get('email')
+        if not (client_id and contract_id and city_id and name and surname and phone and email):
             return JsonResponse({"error": "No car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         client = get_or_none(Client, id=client_id)
         contract = get_or_none(Contract, id=contract_id)

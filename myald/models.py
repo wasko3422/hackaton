@@ -12,7 +12,6 @@ class ModelTimestamps(models.Model):
 
 class Client(ModelTimestamps):
     name = models.CharField(max_length=64)
-    email = models.CharField(max_length=256, blank=True)
 
     def __str__(self):
         return self.name
@@ -40,8 +39,8 @@ class Car(ModelTimestamps):
     next_service_mileage = models.IntegerField(null=True, blank=True)
     next_service_date = models.DateTimeField(null=True, blank=True)
 
-    def __init__(self):
-        return self.license_plate_number
+    def __str__(self):
+        return self.license_plate_number 
 
 
 class City(models.Model):
