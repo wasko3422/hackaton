@@ -1,0 +1,9 @@
+.orders-title {
+  padding: 0 24px;
+}
+
+@media (min-width: 768px) {
+  .orders-block {
+    padding: 0 24px;
+  }
+}

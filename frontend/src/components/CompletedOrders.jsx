@@ -2,6 +2,7 @@
 
 import React from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -10,12 +11,15 @@ const columns = [
   {
     title: 'ID',
     dataIndex: 'job_done_id',
-    sorter: (a, b) => a - b,
+    width: 100,
   },
   {
     title: 'Автомобиль',
-    dataIndex: 'car.car_license_plate',
+    dataIndex: 'car',
     defaultSortOrder: 'descend',
+    render: ({ make, model, car_license_plate }, _, index) => {
+      return `${make.toUpperCase()} ${model} / ${car_license_plate.toUpperCase()}`;
+    },
     sorter: (a, b) => a.age - b.age,
   },
   {
@@ -37,6 +41,28 @@ const columns = [
         </span>
       );
     },
+  },
+  {
+    title: 'Дата выполнения заказа',
+    dataIndex: 'job_done.date',
+    defaultSortOrder: 'descend',
+    sorter: (a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+
+      return 0;
+    },
+    render: (date) => {
+      return moment(date).format('DD.MM.YYYY');
+    },
+  },
+  {
+    title: 'Дилер',
+    dataIndex: 'job_done.dealer_name',
   },
 ];
 
@@ -63,7 +89,17 @@ const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
   console.log('completedOrders', completedOrders);
 
   return (
-    <Table columns={columns} dataSource={completedOrders} onChange={onChange} />
+    <Table
+      scroll={{ x: 992 }}
+      columns={columns}
+      dataSource={completedOrders}
+      onChange={onChange}
+      pagination={{
+        style: {
+          marginRight: 15,
+        },
+      }}
+    />
   );
 };
 

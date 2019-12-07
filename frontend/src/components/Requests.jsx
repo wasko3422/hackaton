@@ -62,7 +62,18 @@ const Requests = ({ requests, dispatch, clientId }) => {
 
   console.log('requests', requests);
 
-  return <Table columns={columns} dataSource={requests} onChange={onChange} />;
+  return (
+    <Table
+      columns={columns}
+      dataSource={requests}
+      onChange={onChange}
+      pagination={{
+        style: {
+          marginRight: 15,
+        },
+      }}
+    />
+  );
 };
 
 export default connect((state) => ({
