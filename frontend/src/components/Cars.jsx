@@ -18,21 +18,21 @@ import {
 import { connect } from 'react-redux';
 const { Meta } = Card;
 
-const Cars = ({ cars, dispatch, clientId }) => {
-  function getCars() {
-    return (dispatch) => {
-      axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
-        dispatch({
-          type: 'FETCH_CARS',
-          payload: res.data || [],
-        })
-      );
-    };
-  }
+function getCars(clientId) {
+  return (dispatch) => {
+    axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
+      dispatch({
+        type: 'FETCH_CARS',
+        payload: res.data || [],
+      })
+    );
+  };
+}
 
+const Cars = ({ cars, dispatch, clientId }) => {
   React.useEffect(() => {
-    dispatch(getCars());
-  }, []);
+    dispatch(getCars(clientId));
+  }, [clientId]);
 
   if (!cars) {
     return (

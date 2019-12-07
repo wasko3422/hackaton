@@ -98,21 +98,21 @@ function onChange(pagination, filters, sorter, extra) {
   console.log('params', pagination, filters, sorter, extra);
 }
 
-const Requests = ({ requests, dispatch, clientId }) => {
-  function getRequests() {
-    return (dispatch) => {
-      axios.get(`/orders?client_id=${clientId}`).then((res) =>
-        dispatch({
-          type: 'FETCH_REQUESTS',
-          payload: res.data || [],
-        })
-      );
-    };
-  }
+function getRequests(clientId) {
+  return (dispatch) => {
+    axios.get(`/orders?client_id=${clientId}`).then((res) =>
+      dispatch({
+        type: 'FETCH_REQUESTS',
+        payload: res.data || [],
+      })
+    );
+  };
+}
 
+const Requests = ({ requests, dispatch, clientId }) => {
   React.useEffect(() => {
-    dispatch(getRequests());
-  }, []);
+    dispatch(getRequests(clientId));
+  }, [clientId]);
 
   console.log('requests', requests);
 

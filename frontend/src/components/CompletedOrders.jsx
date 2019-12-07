@@ -98,21 +98,21 @@ function onChange(pagination, filters, sorter, extra) {
   console.log('params', pagination, filters, sorter, extra);
 }
 
-const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
-  function getCompletedOrders() {
-    return (dispatch) => {
-      axios.get(`/get-jobs-done?client_id=${clientId}`).then((res) =>
-        dispatch({
-          type: 'FETCH_COMPLETED_ORDERS',
-          payload: res.data || [],
-        })
-      );
-    };
-  }
+function getCompletedOrders(clientId) {
+  return (dispatch) => {
+    axios.get(`/get-jobs-done?client_id=${clientId}`).then((res) =>
+      dispatch({
+        type: 'FETCH_COMPLETED_ORDERS',
+        payload: res.data || [],
+      })
+    );
+  };
+}
 
+const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
   React.useEffect(() => {
-    dispatch(getCompletedOrders());
-  }, []); // eslint-disable react-hooks/exhaustive-deps
+    dispatch(getCompletedOrders(clientId));
+  }, [clientId]);
 
   console.log('completedOrders', completedOrders);
 
