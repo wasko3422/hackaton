@@ -68,8 +68,8 @@ class Dealer(ModelTimestamps):
 
 
 class DealersModels(ModelTimestamps):
-    dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, related_name='dealers_models')
-    model = models.OneToOneField(Model, on_delete=models.PROTECT)
+    dealer = models.ForeignKey(Dealer, on_delete=models.PROTECT, related_name='dealers_models')
+    model = models.ForeignKey(Model, on_delete=models.PROTECT)
 
     class Meta:
 

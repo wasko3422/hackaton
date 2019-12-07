@@ -148,8 +148,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 2525
-EMAIL_HOST_USER = 'aldavar2019@mail.ru'
-EMAIL_HOST_PASSWORD = 'IslandPilots'
+EMAIL_HOST_USER = 'myald@mail.ru'
+EMAIL_HOST_PASSWORD = 'IslandPilots2019'
+
+
+ALDAVAR = 'aldavar2019@mail.ru'
 
 
 ADMIN_REORDER =  (

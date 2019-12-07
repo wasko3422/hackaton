@@ -4,6 +4,9 @@ from rest_framework import status
 from myald import serialiazers
 from .models import Client, Car, Dealer, Order, Contract, City, JobType, OrdersJobType, JobsDone
 from rest_framework.views import APIView
+from django.core.mail import send_mail
+from hackaton.settings import ALDAVAR, EMAIL_HOST_USER
+from datetime import timedelta
 
 
 
@@ -76,35 +79,57 @@ class CreateOrderView(APIView):
         client_id, contract_id, city_id, dealer_id = data.get('client_id'), data.get('contract_id'), data.get('city_id'), data.get('dealer_id')
         name, surname, phone, email = data.get('name'), data.get('surname'), data.get('phone'), data.get('email')
         if not (client_id and contract_id and city_id and name and surname and phone and email):
-            return JsonResponse({"error": "No car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({"error": "required params are missing"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
         client = get_or_none(Client, id=client_id)
         contract = get_or_none(Contract, id=contract_id)
         city = get_or_none(City, id=city_id)
         dealer = get_or_none(Dealer, id=dealer_id)
 
         if not (client, contract, city):
-            return JsonResponse({"error": "Uknown car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({"error": "Unknown car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         order = Order(
             contract=contract, client=client, city=city, 
             dealer=dealer, comment=data.get('comment', ''), 
-            date_expected=data.get('date_expected', None),
+            date_expected=data.get('date_expected'),
             part_of_day_expected=data.get('part_of_day_expected', '1'),
-            mileage=data.get('mileage', None), status=data.get('status', 'created'))
+            mileage=data.get('mileage'), status=data.get('status', 'created'),
+            is_auto_sending=False)
 
         order.save()
 
+        is_main_service = False
         job_types = data.get('job_types', [])
+        mileage = data.get('mileage')
+        part_of_day_expected = data.get('part_of_day_expected')
+        date_expected = data.get('date_expected')
+
+        if not (job_types and mileage and part_of_day_expected and date_expected and dealer):
+            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR])
+            return HttpResponse(status=status.HTTP_200_OK)
 
         for i in job_types:
             job_type = get_or_none(JobType, id=i)
             if job_type:
+                if job_type.is_main_service:
+                    is_main_service = True
                 ojm = OrdersJobType(
                     order=order,
                     job_type=job_type,
                 )
                 ojm.save()
 
+        if not is_main_service:
+            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR, dealer.email])
+            return HttpResponse(status=status.HTTP_200_OK)
+
+        car = contract.car
+
+        if car.next_service_mileage and car.next_service_date:
+
+            if order.date_expected >= car.next_service_date - timedelta(days=30) or order.mileage:
+                pritn()
         return HttpResponse(status=status.HTTP_200_OK)
 
 
