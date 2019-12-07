@@ -5,7 +5,7 @@ class ClientSerializer:
     def serialize(self, client):
         return {
             'client_id': client.id,
-            'name_surname': '{} {}'.format(client.first_name, client.last_name),
+            'name': client.name,
         }
 
 
@@ -50,8 +50,8 @@ class DealersSerializer:
         return {
             'dealer_id': dealer.id,
             'dealer_name': dealer.name,
-            'lattitude': 12.321321321,
-            'longtitude': 13.321321321321,
+            'lattitude': dealer.lattitude,
+            'longtitude': dealer.longtitude,
             'address': dealer.address,
             'is_priority': dealer.is_priority,
         }
@@ -98,7 +98,6 @@ class JobsDoneSerializer:
             },
             'job_done': {
                 'mileage': job.mileage,
-                'jobs': job.jobs,
                 'dealer_name': job.dealer.name,
                 'date': job.date,
             }

@@ -30,14 +30,26 @@ class CarsView(APIView):
 
     def get(self, request, *args, **kwargs):
         client_id = request.GET.get('client_id')
-        try:
-            cars = Car.objects.filter(contract__client__id=client_id)
-        except Exception as e:
-            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        result = list([serialiazers.CarSerializer().serialize(i) for i in cars])
-        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+        if client_id:
+            try:
+                cars = Car.objects.filter(contract__client__id=client_id)
+            except Exception as e:
+                return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            result = list([serialiazers.CarSerializer().serialize(i) for i in cars])
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
+        else: 
+            contract_id = request.GET.get('contract_id')
 
+            try:
+                car = Car.objects.get(contract__id=contract_id)
+            except Exception as e:
+                return JsonResponse({"error": "Unknown contract"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            result = [serialiazers.CarSerializer().serialize(car)]
+            return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+        return JsonResponse({"error": "Unknown param"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class JobTypesView(APIView):
 
@@ -104,10 +116,6 @@ class OrdersView(APIView):
         client_id = request.GET.get('client_id')
 
         orders = Order.objects.filter(client_id=client_id)
-
-        if not orders:
-            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
         result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
 
         return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
