@@ -57,3 +57,28 @@ class DealersView(APIView):
             return JsonResponse({"error": "Unknown dealer"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         result = serialiazers.DealersSerializer().serialize(dealer)
         return JsonResponse(result, status=status.HTTP_200_OK)
+
+
+class CreateOrderView(APIView):
+
+    def post(self, request):
+        data = request.data
+
+        client_id, car_id, city_id, dealer_id = data.get('client_id'), data.get('car_id'), data.get('city_id'), data.get('dealer_id'),
+        client = get_or_none(Client, id=data.get('client_id', ''))
+        if not client:
+            return JsonResponse({"error": "Unknown client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+
+
+
+
+
+
+def get_or_none(model, *args, **kwargs):
+    try:
+        return model.objects.get(*args, **kwargs)
+    except model.DoesNotExist:
+        return None   

@@ -20,19 +20,6 @@ services:
       - POSTGRES_USER=hello_hackaton
       - POSTGRES_PASSWORD=hello_hackaton
       - POSTGRES_DB=hello_hackaton_dev
-  frontend:
-        build: ./frontend
-        volumes:
-          - ./frontend:/app
-          # One-way volume to use node_modules from inside image
-          - /app/node_modules
-        ports:
-          - "3000:3000"
-        environment:
-          - NODE_ENV=development
-        depends_on:
-          - web
-        command: npm start
 
 volumes:
   postgres_data:
