@@ -3,6 +3,13 @@
   text-align: center;
 }
 
+.tab-content {
+  background-color: #fff;
+  padding: 24px;
+  min-height: 280px;
+  margin-top: -16px;
+}
+
 .new-item-tab {
   display: none;
 }
