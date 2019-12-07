@@ -9,6 +9,10 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 import { Layout, PageHeader, ConfigProvider } from 'antd';
 import ruRU from 'antd/es/locale/ru_RU';
+import moment from 'moment';
+import 'moment/locale/ru';
+
+moment.locale('ru');
 
 const { Footer, Content } = Layout;
 
