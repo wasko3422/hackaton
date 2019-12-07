@@ -25,7 +25,7 @@ SECRET_KEY = 'orx+bmx!27tij1g#g5lhlm7%_@lk0tgpt@5a2z98=7+p25mpkk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ['WEBSITE_SITE_NAME'] + '.azurewebsites.net', '127.0.0.1'] if 'WEBSITE_SITE_NAME' in os.environ else []
 
 
 # Application definition
