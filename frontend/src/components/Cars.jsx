@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
@@ -16,23 +18,21 @@ import {
 import { connect } from 'react-redux';
 const { Meta } = Card;
 
-const Cars = ({ cars, dispatch }) => {
-  console.log(cars, dispatch);
+function getCars(clientId) {
+  return (dispatch) => {
+    axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
+      dispatch({
+        type: 'FETCH_CARS',
+        payload: res.data || [],
+      })
+    );
+  };
+}
 
-  function getCars() {
-    return (dispatch) => {
-      axios.get('/get-cars?client_id=1').then((res) =>
-        dispatch({
-          type: 'FETCH_CARS',
-          payload: res.data || [],
-        })
-      );
-    };
-  }
-
+const Cars = ({ cars, dispatch, clientId }) => {
   React.useEffect(() => {
-    dispatch(getCars());
-  }, []);
+    dispatch(getCars(clientId));
+  }, [clientId]);
 
   if (!cars) {
     return (
@@ -60,10 +60,10 @@ const Cars = ({ cars, dispatch }) => {
     <>
       {_.chunk(cars, 3).map((chunk) => {
         return (
-          <Row gutter={16}>
+          <Row gutter={16} key={chunk.map(({ car_id }) => car_id).join('-')}>
             {chunk.map((car) => {
               return (
-                <Col span={8}>
+                <Col span={8} key={car.car_id}>
                   <Card>
                     <Meta
                       avatar={
@@ -108,4 +108,7 @@ const Cars = ({ cars, dispatch }) => {
   );
 };
 
-export default connect((state) => ({ cars: state.cars }))(Cars);
+export default connect((state) => ({
+  cars: state.cars,
+  clientId: state.client.id,
+}))(Cars);
