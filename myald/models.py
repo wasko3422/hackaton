@@ -77,6 +77,12 @@ class Order(ModelTimestamps):
         ('2', '2')
     ]   
 
+    STATUSES = [
+        ('created', 'created'),
+        ('in progress', 'in progress'),
+        ('sent', 'sent')
+    ]
+
     contract = models.OneToOneField(Contract, on_delete=models.PROTECT)
     client = models.OneToOneField(Client, on_delete=models.PROTECT)
     dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, null=True, blank=True)
@@ -87,9 +93,10 @@ class Order(ModelTimestamps):
     part_of_day_expected = models.CharField(max_length=1, choices=COMBINATIONS)
     is_auto_sending = models.BooleanField(default=False)
     sent_at = models.DateTimeField(null=True)
+    status = models.CharField(max_length=32, choices=STATUSES)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class JobType(models.Model):
@@ -103,13 +110,18 @@ class JobType(models.Model):
 
 class OrdersJobType(models.Model):
     job_type = models.ForeignKey(JobType, on_delete=models.PROTECT)
-    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='jobs')
+
+
+    def __str__(self):
+        return '{} -> {}'.format(self.order, self.job_type)
 
 
 class JobsDone(ModelTimestamps):
     car = models.ForeignKey(Car, on_delete=models.PROTECT)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     dealer = models.ForeignKey(Dealer, on_delete=models.PROTECT)
+    contract = models.ForeignKey(Contract, on_delete=models.PROTECT)
     mileage = models.IntegerField()
     date = models.DateTimeField()
     jobs = JSONField()
