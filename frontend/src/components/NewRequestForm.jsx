@@ -3,6 +3,7 @@ import { Form, Input, DatePicker, Radio, Button, Row } from 'antd';
 
 import { CustomSelect, UserRemoteSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
+import DillersMap from './DilersMap/DillersMap';
 
 const { TextArea } = Input;
 
@@ -81,6 +82,9 @@ class NewRequestForm extends Component {
               size="large"
             />
           )}
+        </Form.Item>
+        <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
+          <DillersMap />
         </Form.Item>
         <Form.Item label="Укажите текущий пробег автомобиля">
           {getFieldDecorator('kilometrage')(
