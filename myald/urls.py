@@ -11,7 +11,7 @@ urlpatterns = [
     path('create-order', views.CreateOrderView.as_view()),
     path('get-orders', views.OrdersView.as_view()),
     path('get-jobs-done', views.JobsDoneView.as_view()),
-    path('login', views.login),
+    path('m-auth', views.login),
     path('m-delete-order', views.DeleteOrderView.as_view()),
     path('m-update-order', views.UpdateOrderView.as_view()),
     path('m-get-orders', views.AllOrdersView.as_view())

@@ -96,7 +96,7 @@ class CreateOrderView(APIView):
             date_expected=data.get('date_expected'),
             part_of_day_expected=data.get('part_of_day_expected', '1'),
             mileage=data.get('mileage'), status=data.get('status', 'created'),
-            is_auto_sending=False)
+            is_auto_sending=False, last_name=surname, first_name=name, phone=phone, email=email)
 
         order.save()
 
@@ -166,12 +166,9 @@ class OrdersView(APIView):
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
             contract_id = request.GET.get('contract_id')
-            try:
-                order = Order.objects.get(contract__id=contract_id)
-            except Exception as e:
-                return JsonResponse({"error": "Unknown contract"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            result = [serialiazers.OrderSerializer().serialize(order)]
+            print(contract_id)
+            orders = Order.objects.filter(contract=contract_id)
+            result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
         return JsonResponse({"error": "Unknown param"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
@@ -187,12 +184,8 @@ class JobsDoneView(APIView):
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else: 
             contract_id = request.GET.get('contract_id')
-            try:
-                jobs = JobsDone.objects.get(contract__id=contract_id)
-            except Exception as e:
-                return JsonResponse({"error": "Unknown contract"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            result = [serialiazers.JobsDoneSerializer().serialize(jobs)]
+            jobs = JobsDone.objects.filter(contract__id=contract_id)
+            result = [serialiazers.JobsDoneSerializer().serialize(i) for i in jobs]
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
         return JsonResponse({"error": "Unknown param"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   

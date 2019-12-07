@@ -110,6 +110,12 @@ class AnotherOrderSerializer:
 
     def serialize(self, order):
         jobs = [{'job_name': i.job_type.name, 'job_id': i.id} for i in order.jobs.all()]
+
+        main_service = False
+
+        for i in order.jobs.all():
+            if i.job_type.is_main_service:
+                main_service = True
         
         return {
             'order_id': order.id,
@@ -119,12 +125,15 @@ class AnotherOrderSerializer:
                 'model': order.contract.car.model.model,
                 'car_license_plate': order.contract.car.license_plate_number,
             },
+            'city_name': order.city.name,
             'order': {
                 'mileage': order.mileage,
                 'jobs': jobs,
                 'dealer_name': order.dealer.name,
                 'created_at': order.created_at,
+                'part_of_day_expected': order.part_of_day_expected,
                 'date_expected': order.date_expected,
+                'main_service': main_service,
                 'status': order.status,
                 'contacts': {
                     'name': order.first_name,
