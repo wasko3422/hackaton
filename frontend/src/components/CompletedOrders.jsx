@@ -27,22 +27,6 @@ const columns = [
     dataIndex: 'job_done.mileage',
   },
   {
-    title: 'Перечень работ',
-    dataIndex: 'job_done.jobs',
-    render: (jobs, _, index) => {
-      if (!jobs.length) {
-        return <span>-</span>;
-      }
-      return (
-        <span key={index}>
-          {jobs.map((job) => {
-            return <Tag key={job}>{job.toUpperCase()}</Tag>;
-          })}
-        </span>
-      );
-    },
-  },
-  {
     title: 'Дата выполнения заказа',
     dataIndex: 'job_done.date',
     defaultSortOrder: 'descend',

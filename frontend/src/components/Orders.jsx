@@ -16,7 +16,7 @@ export const Orders = () => (
     </div>
     <div className="orders-block">
       <Title level={3} className="orders-title">
-        Выполненные заказы
+        Выполненное ТО
       </Title>
       <CompletedOrders />
     </div>

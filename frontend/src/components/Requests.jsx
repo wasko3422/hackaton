@@ -10,7 +10,7 @@ const columns = [
   {
     title: 'ID',
     dataIndex: 'order_id',
-    sorter: (a, b) => a - b,
+    width: 100,
   },
   {
     title: 'Автомобиль',
