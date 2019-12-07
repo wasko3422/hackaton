@@ -1,7 +1,6 @@
 import React from "react";
 import Index from "./pages/index";
 import New from "./pages/new";
-import Map from "./pages/map";
 import logo from "./logo.svg";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -18,15 +17,12 @@ export default function App() {
           style={{
             backgroundColor: "#fff"
           }}
-          title={<img src={logo} height={40} />}
+          title={<img src={logo} height="40" alt="new-ald" />}
         />
         <Content style={{ padding: "20px 50px" }}>
           <Switch>
             <Route path="/new">
               <New />
-            </Route>
-            <Route path="/map">
-              <Map />
             </Route>
             <Route path="/">
               <Index />
