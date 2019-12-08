@@ -267,9 +267,38 @@ class CarsServicesView(APIView):
 
         cars = Car.objects.all()
 
-        for car in cars:
-            continue
+        changed_cars = []
 
+        for car in cars:
+            print(car)
+            if car.last_service_date and car.next_service_date:
+                continue
+            
+            jobs = JobsDone.objects.filter(car=car)
+            print(jobs)
+            print('321')
+
+            if not jobs:
+                car.next_service_date = car.sold_at + timedelta.days(365*car.model.maintaince_years)
+                car.next_service_mileage = car.model.maintaince_years
+                car.save()
+                changed_cars.append(car)
+                continue
+            car.next_service_mileage = car.last_service_mileage + car.model.maintaince_kms
+            jobs = sorted(jobs, key=lambda x: x.car.last_service_mileage)
+            next_service_days = 0
+
+            for i in range(1, len(jobs)):
+                next_service_days += (jobs[i].date - jobs[i-1].date).days
+            
+            car.next_service_date = car.last_service_date + timedelta(days=int(next_service_days/len(jobs)))
+            car.save()
+            changed_cars.append(car)
+
+        result = list([serialiazers.CarSerializer().serialize(i) for i in changed_cars])
+        return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
+
+        
 
 #TODO auth
 def login(request):
