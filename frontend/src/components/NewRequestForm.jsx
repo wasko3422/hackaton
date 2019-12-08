@@ -112,6 +112,7 @@ class NewRequestForm extends Component {
 
       Promise.race([axios.post(`/create-order`, values), timeout]).then(
         function(value) {
+          hide();
           const hideSuccess = message.success('Заявка создана успешно', 0);
           setTimeout(() => {
             hideSuccess();
