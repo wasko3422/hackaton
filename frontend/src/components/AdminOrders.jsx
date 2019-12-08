@@ -179,7 +179,6 @@ const getColumns = (dispatch) => [
           </Popconfirm>
           {status !== 'sent' && status !== 'declined' && (
             <p>
-              <a>email</a>
               <Popconfirm
                 title="Отправить письмо дилеру?"
                 onConfirm={confirmSent(order_id, dispatch)}
