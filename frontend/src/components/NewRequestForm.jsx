@@ -107,15 +107,21 @@ class NewRequestForm extends Component {
       this.setState({
         loading: true,
       });
-      setTimeout(() => {
-        hide();
-        const hideSuccess = message.success('Заявка создана успешно', 0);
-        setTimeout(() => {
-          hideSuccess();
-          window.location.href = `/${window.location.search}`;
-        }, 2000);
-      }, 3000);
-      axios.post(`/create-order`, values);
+
+      const timeout = new Promise(function(resolve, reject) {
+        setTimeout(resolve, 3000);
+      });
+
+      Promise.race([axios.post(`/create-order`, values), timeout]).then(
+        function(value) {
+          hide();
+          const hideSuccess = message.success('Заявка создана успешно', 0);
+          setTimeout(() => {
+            hideSuccess();
+            window.location.href = `/${window.location.search}`;
+          }, 2000);
+        }
+      );
     });
   };
 
