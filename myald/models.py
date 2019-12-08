@@ -94,10 +94,10 @@ class Order(ModelTimestamps):
         ('sent', 'sent')
     ]
 
-    contract = models.OneToOneField(Contract, on_delete=models.PROTECT)
-    client = models.OneToOneField(Client, on_delete=models.PROTECT)
-    dealer = models.OneToOneField(Dealer, on_delete=models.PROTECT, null=True, blank=True)
-    city = models.OneToOneField(City, on_delete=models.PROTECT)
+    contract = models.ForeignKey(Contract, on_delete=models.PROTECT)
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    dealer = models.ForeignKey(Dealer, on_delete=models.PROTECT, null=True, blank=True)
+    city = models.ForeignKey(City, on_delete=models.PROTECT)
     phone = models.CharField(max_length=32)
     email = models.CharField(max_length=64)
     first_name = models.CharField(max_length=32)

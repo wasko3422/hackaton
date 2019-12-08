@@ -1,0 +1,17 @@
+.cars-name,
+.cars-contract {
+  text-align: center;
+}
+.cars-license-plate {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .cars-name,
+  .cars-contract {
+    text-align: left;
+  }
+  .cars-license-plate {
+    text-align: right;
+  }
+}

@@ -2,9 +2,16 @@
 
 import React from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
+
+const getCarName = (car) => {
+  return `${car.make.toUpperCase()} ${
+    car.model
+  } / ${car.car_license_plate.toUpperCase()}`;
+};
 
 const columns = [
   {
@@ -14,12 +21,28 @@ const columns = [
   },
   {
     title: 'Автомобиль',
-    dataIndex: 'car.car_license_plate',
-    defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
+    dataIndex: 'car',
+    render: getCarName,
+    width: 350,
+    sorter: (a, b) => {
+      const nameA = getCarName(a.car);
+      const nameB = getCarName(b.car);
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    },
+    onFilter: (value, record) => {
+      return `${record.car.make.toUpperCase()} ${record.car.model}` === value;
+    },
   },
   {
     title: 'Пробег',
+    width: 100,
     dataIndex: 'order.mileage',
   },
   {
@@ -38,11 +61,65 @@ const columns = [
       );
     },
   },
-];
+  {
+    title: 'Дата создания заявки',
+    dataIndex: 'order.created_at',
+    defaultSortOrder: 'descend',
+    width: 180,
+    sorter: (a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
 
-function onChange(pagination, filters, sorter, extra) {
-  console.log('params', pagination, filters, sorter, extra);
-}
+      return 0;
+    },
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Предполагаемая дата',
+    dataIndex: 'order.date_expected',
+    width: 180,
+    sorter: (a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+
+      return 0;
+    },
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Дилер',
+    dataIndex: 'order.dealer_name',
+  },
+  {
+    title: 'Статус',
+    dataIndex: 'order.status',
+    width: 140,
+    render: (status) => {
+      if (status === 'created') {
+        return <Tag color="geekblue">Создана</Tag>;
+      }
+      if (status === 'sent') {
+        return <Tag color="green">Отправлена дилеру</Tag>;
+      }
+      if (status === 'pending') {
+        return <Tag color="orange">В обработке</Tag>;
+      }
+      return status;
+    },
+  },
+];
 
 function getRequests(clientId) {
   return (dispatch) => {
@@ -60,13 +137,34 @@ const Requests = ({ requests, dispatch, clientId }) => {
     dispatch(getRequests(clientId));
   }, [clientId]);
 
+  const filteredColumns = columns.map((column) => {
+    if (column.dataIndex === 'car' && requests) {
+      return {
+        ...column,
+        filters: requests.reduce((acc, record) => {
+          const name = `${record.car.make.toUpperCase()} ${record.car.model}`;
+          if (acc.some((filter) => filter.value === name)) {
+            return acc;
+          }
+          return acc.concat({
+            text: name,
+            value: name,
+          });
+        }, []),
+      };
+    }
+    return column;
+  });
+
   console.log('requests', requests);
 
   return (
     <Table
-      columns={columns}
+      columns={filteredColumns}
+      scroll={{ x: 1600 }}
+      rowKey={(record) => record.order_id}
       dataSource={requests}
-      onChange={onChange}
+      loading={!requests}
       pagination={{
         style: {
           marginRight: 15,

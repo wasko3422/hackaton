@@ -22,6 +22,10 @@
   justify-content: flex-end;
 }
 
+.cars-content {
+  margin-bottom: -24px;
+}
+
 @media (min-width: 992px) {
 }
 
@@ -37,7 +41,8 @@
 }
 
 @media (min-width: 576px) {
-  .new-item-block {
+  .cars-content {
+    padding: 0 24px;
   }
 
   .tab {
