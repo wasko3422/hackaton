@@ -126,8 +126,8 @@ class JobType(models.Model):
 
 
 class OrdersJobType(models.Model):
-    job_type = models.ForeignKey(JobType, on_delete=models.PROTECT)
-    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='jobs')
+    job_type = models.ForeignKey(JobType, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='jobs')
 
 
     def __str__(self):
