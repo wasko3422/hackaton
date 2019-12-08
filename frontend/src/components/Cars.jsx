@@ -74,7 +74,9 @@ const Cars = ({ cars, dispatch, location }) => {
                       </Col>
                     </Row>
                     <p className="cars-contract">
-                      <Text type="secondary">Контракт {car.contract_id}</Text>
+                      <Text type="secondary">
+                        Контракт {car.contract_number}
+                      </Text>
                     </p>
 
                     <Divider style={{ margin: '40px 0' }}>

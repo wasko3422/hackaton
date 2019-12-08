@@ -24,6 +24,7 @@ class CarSerializer:
         return {
             'contract_id': car.contract.id,
             'car_id': car.id,
+            'contract_number': car.contract.contract_number,
             'car_make': car.model.make,
             'car_model': car.model.model,
             'car_logo_url': car.model.logo,
@@ -120,6 +121,7 @@ class AnotherOrderSerializer:
         return {
             'order_id': order.id,
             'contract_id': order.contract.id,
+            'contract_number': order.contract.contract_number,
             'car': {
                 'make': order.contract.car.model.make,
                 'model': order.contract.car.model.model,

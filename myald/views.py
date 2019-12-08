@@ -110,7 +110,7 @@ class CreateOrderView(APIView):
             date_expected = parser.parse(date_expected)
 
         if not (job_types and mileage and part_of_day_expected and date_expected and dealer):
-            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR])
+            build_second_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
 
         for i in job_types:
@@ -128,7 +128,7 @@ class CreateOrderView(APIView):
             order.status = 'sent'
             order.is_auto_sending = True
             order.save()
-            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email, ALDAVAR, dealer.email])
+            build_first_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
 
         car = contract.car
@@ -139,10 +139,11 @@ class CreateOrderView(APIView):
                 order.status = 'sent'
                 order.is_auto_sending = True
                 order.save()
-                send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email, ALDAVAR, dealer.email])
-                return HttpResponse(status=status.HTTP_200_OK)
 
-            send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email, ALDAVAR])
+                build_first_mail(order)
+                return HttpResponse(status=status.HTTP_200_OK)
+            
+            build_second_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
         model = car.model
         if  order.date_expected >= car.sold_at + timedelta(days=365*model.maintaince_years - 30) \
@@ -150,8 +151,8 @@ class CreateOrderView(APIView):
             order.status = 'sent'
             order.is_auto_sending = True
             order.save()
-            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [email,ALDAVAR, dealer.email])
-        send_mail('text 2', 'text 2', EMAIL_HOST_USER, [email,ALDAVAR])
+            build_first_mail(order)
+        build_second_mail(order)
         return HttpResponse(status=status.HTTP_200_OK)
 
 
@@ -208,7 +209,7 @@ class UpdateOrderView(APIView):
         order.save()
 
         if s:
-            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [ALDAVAR, dealer.email])
+            build_first_mail(order)
 
         return HttpResponse(status=status.HTTP_200_OK)
         
@@ -240,8 +241,7 @@ class SendEmailView(APIView):
         order = get_or_none(Order, id=order_id)
 
         if order:
-            dealer = order.dealer
-            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [order.email, ALDAVAR, dealer.email])
+            build_first_mail(order)
 
         return HttpResponse(status=status.HTTP_200_OK)
 
@@ -260,6 +260,17 @@ class ChangeStatusView(APIView):
             order.save()
         return HttpResponse(status=status.HTTP_200_OK)
 
+
+class CarsServicesView(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        cars = Car.objects.all()
+
+        for car in cars:
+            continue
+
+
 #TODO auth
 def login(request):
     return HttpResponse(status=status.HTTP_200_OK)
@@ -270,3 +281,53 @@ def get_or_none(model, *args, **kwargs):
         return model.objects.get(*args, **kwargs)
     except model.DoesNotExist:
         return None   
+
+
+def build_first_mail(order):
+
+    text = """
+Заявка автоматически направлена дилеру. MyALD свяжется с вами для подтверждения.
+Дилер: {}
+Автомобиль:
+{} {} {}
+Перечень проводимых работ:
+{}
+Предполагаемая дата обслуживания:
+{} {}
+    """
+    dealer = order.dealer
+    car = order.contract.car
+    jobs = ', '.join(i.job_type.name for i in order.jobs.all())
+
+    if order.part_of_day_expected == '1':
+        part = 'до 14:00'
+    else:
+        part = 'после 14:00'
+
+    text = text.format(dealer.name, car.model.make, car.model.model, car.license_plate_number, jobs, order.date_expected.strftime('%d.%m.%y'), part)
+    send_mail('Заявка MyALD {}'.format(order.id), text, EMAIL_HOST_USER, [order.email, ALDAVAR, dealer.email])
+
+
+def build_second_mail(order):
+    text = """
+Ваша заявка получена. MyALD свяжется с вами для подтверждения.
+Заявка для дилера: {}
+Автомобиль:
+{} {} {}
+Перечень проводимых работ:
+{}
+Предполагаемая дата обслуживания:
+{} {}
+    """
+    dealer = order.dealer
+    car = order.contract.car
+    jobs = ', '.join(i.job_type.name for i in order.jobs.all())
+
+    if order.part_of_day_expected == '1':
+        part = 'до 14:00'
+    else:
+        part = 'после 14:00'
+
+    text = text.format(dealer.name, car.model.make, car.model.model, car.license_plate_number, jobs, order.date_expected.strftime('%d.%m.%y'), part)
+    send_mail('Заявка MyALD {}'.format(order.id), text, EMAIL_HOST_USER, [order.email, ALDAVAR])
+
