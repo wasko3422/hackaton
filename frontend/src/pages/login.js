@@ -9,6 +9,7 @@ class ManagerLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        window.location.replace('/');
       }
     });
   };
@@ -19,7 +20,7 @@ class ManagerLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
           {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+            rules: [{ required: true, message: 'Пожалуйста, введите email' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -29,7 +30,7 @@ class ManagerLoginForm extends React.Component {
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
+            rules: [{ required: true, message: 'Пожалуйста, введите пароль' }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -59,6 +60,7 @@ class DriverLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        window.location.replace('/');
       }
     });
   };
@@ -69,7 +71,12 @@ class DriverLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
           {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+            rules: [
+              {
+                required: true,
+                message: 'Пожалуйста, введите номер контракта',
+              },
+            ],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -79,7 +86,9 @@ class DriverLoginForm extends React.Component {
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
+            rules: [
+              { required: true, message: 'Пожалуйста, введите госномер' },
+            ],
           })(
             <Input
               prefix={<Icon type="car" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -108,6 +117,7 @@ class AdminLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        window.location.replace('/administrate');
       }
     });
   };
@@ -118,17 +128,17 @@ class AdminLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
           {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Please input your username!' }],
+            rules: [{ required: true, message: 'Пожалуйста, введите логин' }],
           })(
             <Input
               prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Email"
+              placeholder="Логин"
             />
           )}
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Please input your Password!' }],
+            rules: [{ required: true, message: 'Пожалуйста, введите пароль' }],
           })(
             <Input
               prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -170,7 +180,7 @@ const Login = () => {
         </Card>
       </Col>
       <Col xs={24} md={12} lg={8}>
-        <Card title="Администратор">
+        <Card title="Управление заявками">
           <AdminLogin />
         </Card>
       </Col>

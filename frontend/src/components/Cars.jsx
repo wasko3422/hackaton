@@ -30,7 +30,7 @@ const Cars = ({ cars, dispatch, clientId }) => {
     return (
       <Row gutter={16}>
         <Col sm={24} md={12} xl={8}>
-          <Card>
+          <Card style={{ marginBottom: 24 }}>
             <Skeleton active paragraph={{ rows: 8 }} />
           </Card>
         </Col>
