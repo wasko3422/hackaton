@@ -142,21 +142,33 @@ const getColumns = (dispatch) => [
     key: 'operation',
     fixed: 'right',
     width: 100,
-    render: (_, { order_id }) => (
-      <span>
-        <Link to={`/admin/myald/order/${order_id}/change/`}>изменить</Link>
-        <br />
-        <Popconfirm
-          title="Вы уверены?"
-          onConfirm={confirm(order_id, dispatch)}
-          okText="Да"
-          cancelText="Нет"
-          placement="bottomRight"
-        >
-          <a style={{ color: '#f5222d' }}>удалить</a>
-        </Popconfirm>
-      </span>
-    ),
+    render: (_, { order_id, order: { status } }) => {
+      return (
+        <div className="orders-actions">
+          {status !== 'sent' && (
+            <p>
+              <Link to={`/admin/myald/order/${order_id}/change/`}>
+                изменить
+              </Link>{' '}
+            </p>
+          )}
+          <Popconfirm
+            title="Вы уверены?"
+            onConfirm={confirm(order_id, dispatch)}
+            okText="Да"
+            cancelText="Нет"
+            placement="bottomRight"
+          >
+            <a style={{ color: '#f5222d' }}>удалить</a>
+          </Popconfirm>
+          {status !== 'sent' && status !== 'declined' && (
+            <p>
+              <a>email</a>
+            </p>
+          )}
+        </div>
+      );
+    },
   },
 ];
 
