@@ -83,23 +83,16 @@ class CreateOrderView(APIView):
             return JsonResponse({"error": "required params are missing"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         contract = get_or_none(Contract, id=contract_id)
-        client = get_or_none(Client, id=client_id)
-        if not client:
-            client = contract.client
-        city = get_or_none(City, id=city_id)
-        dealer = get_or_none(Dealer, id=dealer_id)
-
-        if not (client, contract, city):
-            return JsonResponse({"error": "Unknown car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+        if not client_id:
+            client_id = contract.client.id
         date_expected = data.get('date_expected')
 
         if date_expected:
             date_expected = parser.parse(date_expected)
         
         order = Order(
-            contract=contract, client=client, city=city, 
-            dealer=dealer, comment=data.get('comment', ''), 
+            contract_id=contract_id, client_id=client_id, city_id=city_id, 
+            dealer_id=dealer_id, comment=data.get('comment', ''), 
             date_expected=date_expected,
             part_of_day_expected=data.get('part_of_day_expected', '1'),
             mileage=data.get('mileage'), status=data.get('status', 'created'),
@@ -114,7 +107,7 @@ class CreateOrderView(APIView):
         mileage = data.get('mileage')
         part_of_day_expected = data.get('part_of_day_expected')
 
-        if not (job_types and mileage and part_of_day_expected and date_expected and dealer):
+        if not (job_types and mileage and part_of_day_expected and date_expected and dealer_id):
             build_second_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
 
@@ -280,8 +273,6 @@ class CarsServicesView(APIView):
                 continue
             
             jobs = JobsDone.objects.filter(car=car)
-            print(jobs)
-            print('321')
 
             if not jobs:
                 car.next_service_date = car.sold_at + timedelta.days(365*car.model.maintaince_years)
@@ -330,6 +321,13 @@ def build_first_mail(order):
 {}
 Предполагаемая дата обслуживания:
 {} {}
+
+Номер телефона дилера для связи:
+{}
+
+Контакты заявителя:
+{} {}
+{}
     """
     dealer = order.dealer
     car = order.contract.car
@@ -339,8 +337,7 @@ def build_first_mail(order):
         part = 'до 14:00'
     else:
         part = 'после 14:00'
-
-    text = text.format(dealer.name, car.model.make, car.model.model, car.license_plate_number, jobs, order.date_expected.strftime('%d.%m.%y'), part)
+    text = text.format(dealer.name, car.model.make, car.model.model, car.license_plate_number, jobs, order.date_expected.strftime('%d.%m.%y'), part, dealer.phone, order.first_name, order.last_name, order.phone)
     send_mail('Заявка MyALD {}'.format(order.id), text, EMAIL_HOST_USER, [order.email, ALDAVAR, dealer.email])
 
 
@@ -358,16 +355,37 @@ def build_second_mail(order):
 {}
 Предполагаемая дата обслуживания:
 {} {}
+
+Номер телефона дилера для связи:
+{}
+
+Контакты заявителя:
+{} {}
+{}
     """
     dealer = order.dealer
+    
+    dealer_name = '-'
+    dealer_phone = '-'
+
+    if dealer:
+        dealer_name = dealer.name
+        dealer_phone = dealer.phone
+
     car = order.contract.car
     jobs = ', '.join(i.job_type.name for i in order.jobs.all())
+
+    date = order.date_expected
+    if date:
+        date = date.strftime('%d.%m.%y')
+    else:
+        date = ''
 
     if order.part_of_day_expected == '1':
         part = 'до 14:00'
     else:
         part = 'после 14:00'
 
-    text = text.format(dealer.name, car.model.make, car.model.model, car.license_plate_number, jobs, order.date_expected.strftime('%d.%m.%y'), part)
+    text = text.format(dealer_name, car.model.make, car.model.model, car.license_plate_number, jobs, date, part, dealer_phone, order.first_name, order.last_name, order.phone)
     send_mail('Заявка MyALD {}'.format(order.id), text, EMAIL_HOST_USER, [order.email, ALDAVAR])
 

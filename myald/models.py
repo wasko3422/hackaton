@@ -60,6 +60,7 @@ class Dealer(ModelTimestamps):
     city = models.ForeignKey(City, on_delete=models.PROTECT, related_name="dealers")
     lattitude = models.FloatField()
     longtitude = models.FloatField()
+    phone = models.CharField(max_length=64)
     email = models.CharField(max_length=128)
     is_priority = models.BooleanField()
     address = models.CharField(max_length=256)
