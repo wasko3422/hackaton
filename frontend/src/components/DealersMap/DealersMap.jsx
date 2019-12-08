@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
 import cn from 'classnames';
 import { connect } from 'react-redux';
-import { Row, Col, Button, Icon, Spin, Typography, Checkbox } from 'antd';
+import { Row, Col, Button, Icon, Spin, Typography } from 'antd';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
 import './DealersMap.css';
@@ -25,7 +25,7 @@ class DealersMap extends Component {
     map: null,
     loading: true,
     activeFeatureId: null,
-    isOnlyPriority: true,
+    isAllDealersShown: false,
   };
 
   onMapLoad = (map) => {
@@ -61,12 +61,12 @@ class DealersMap extends Component {
     }
   };
 
-  setDealersFilter = ({ target }) => {
-    this.setState({ isOnlyPriority: !target.checked });
+  showAllDealers = () => {
+    this.setState({ isAllDealersShown: true });
   };
 
   render() {
-    const { loading, activeFeatureId, isOnlyPriority } = this.state;
+    const { loading, activeFeatureId, isAllDealersShown } = this.state;
     const { dealers: allDealers, cityCoords } = this.props;
     const mapCenter =
       cityCoords && cityCoords.features && cityCoords.features[0].center;
@@ -75,9 +75,9 @@ class DealersMap extends Component {
 
     const priorityDealers = allDealers.filter(({ is_priority }) => is_priority);
     const otherDealers = allDealers.filter(({ is_priority }) => !is_priority);
-    const dealers = isOnlyPriority
-      ? priorityDealers
-      : [...priorityDealers, ...otherDealers];
+    const dealers = isAllDealersShown
+      ? [...priorityDealers, ...otherDealers]
+      : priorityDealers;
     return (
       <>
         <Row
@@ -177,9 +177,11 @@ class DealersMap extends Component {
           </Col>
         </Row>
         <Row>
-          <Checkbox onChange={this.setDealersFilter}>
-            Показать всех доступных дилеров
-          </Checkbox>
+          {!isAllDealersShown && (
+            <Button type="primary" onClick={this.showAllDealers}>
+              Показать всех доступных дилеров
+            </Button>
+          )}
         </Row>
       </>
     );
