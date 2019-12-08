@@ -78,13 +78,15 @@ WSGI_APPLICATION = 'hackaton.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
-        "NAME": os.environ.get("SQL_DATABASE", "myalddb"),
-        "USER": os.environ.get("SQL_USER", "valentin@myald"),
-        "PASSWORD": os.environ.get("SQL_PASSWORD", "george!9871#"),
-        "HOST": os.environ.get("SQL_HOST", "myald.postgres.database.azure.com"),
-        "PORT": os.environ.get("SQL_PORT", "5432"),
+    'default': {
+        # 'HOST': 'localhost'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('AVIA_DATABASE_NAME', 'avia'),
+        'USER': os.environ.get('AVIA_DATABASE_USER', 'postgres'),
+        'PASSWORD': os.environ.get('AVIA_DATABASE_PASSWORD', 'postgres'),
+        'HOST': os.environ.get('AVIA_DATABASE_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('AVIA_DATABASE_PORT', '5432'),
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
