@@ -56,12 +56,12 @@ export default function App() {
                 <Route path="/login">
                   <Login />
                 </Route>
-                <Route path="/new">
-                  <New />
-                </Route>
                 <Route path="/administrate">
                   <Administrate />
                 </Route>
+                <PrivateRoute path="/new">
+                  <New />
+                </PrivateRoute>
                 <PrivateRoute path="/" exact>
                   <Index />
                 </PrivateRoute>

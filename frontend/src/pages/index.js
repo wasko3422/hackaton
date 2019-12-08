@@ -1,16 +1,16 @@
 import React from 'react';
 import { Button, Tabs, Icon } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Cars from '../components/Cars';
 import { Orders } from '../components/Orders';
 import './index.css';
 
 const { TabPane } = Tabs;
 
-const Index = () => (
+const Index = ({ location }) => (
   <>
     <div className="new-item-block">
-      <Link to="/new">
+      <Link to={`/new${location.search}`}>
         <Button type="primary" icon="plus-circle" shape="round" size="large">
           Новая заявка
         </Button>
@@ -21,7 +21,7 @@ const Index = () => (
       size="large"
       tabBarExtraContent={
         <div className="new-item-tab">
-          <Link to="/new">
+          <Link to={`/new${location.search}`}>
             <Button type="primary" icon="plus-circle" size="large">
               Новая заявка
             </Button>
@@ -61,4 +61,4 @@ const Index = () => (
   </>
 );
 
-export default Index;
+export default withRouter(Index);
