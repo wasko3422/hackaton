@@ -62,7 +62,7 @@ const Cars = ({ cars, dispatch, location }) => {
                     <Row>
                       <Col sm={24} md={12}>
                         <Title level={4} className="cars-name">
-                          {car.car_make.toUpperCase()} {car.model}
+                          {car.car_make.toUpperCase()} {car.car_model}
                         </Title>
                       </Col>
                       <Col sm={24} md={12}>
