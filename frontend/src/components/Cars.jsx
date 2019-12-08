@@ -3,6 +3,7 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 import {
   Card,
   Col,
@@ -22,10 +23,10 @@ import './Cars.css';
 
 const { Title, Text } = Typography;
 
-const Cars = ({ cars, dispatch, clientId }) => {
+const Cars = ({ cars, dispatch, location }) => {
   React.useEffect(() => {
-    dispatch(getCars(clientId));
-  }, [clientId]);
+    dispatch(getCars(location.search));
+  }, [location.search]);
 
   if (!cars) {
     return (
@@ -126,7 +127,9 @@ const Cars = ({ cars, dispatch, clientId }) => {
   );
 };
 
-export default connect((state) => ({
-  cars: state.cars,
-  clientId: state.client.id,
-}))(Cars);
+export default withRouter(
+  connect((state) => ({
+    cars: state.cars,
+    clientId: state.client.id,
+  }))(Cars)
+);

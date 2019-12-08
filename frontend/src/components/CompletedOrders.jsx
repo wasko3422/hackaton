@@ -3,6 +3,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -71,9 +72,9 @@ const columns = [
   },
 ];
 
-function getCompletedOrders(clientId) {
+function getCompletedOrders(search) {
   return (dispatch) => {
-    axios.get(`/get-jobs-done?client_id=${clientId}`).then((res) =>
+    axios.get(`/get-jobs-done${search}`).then((res) =>
       dispatch({
         type: 'FETCH_COMPLETED_ORDERS',
         payload: res.data || [],
@@ -82,10 +83,10 @@ function getCompletedOrders(clientId) {
   };
 }
 
-const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
+const CompletedOrders = ({ completedOrders, dispatch, location }) => {
   React.useEffect(() => {
-    dispatch(getCompletedOrders(clientId));
-  }, [clientId]);
+    dispatch(getCompletedOrders(location.search));
+  }, [location.search]);
 
   const filteredColumns = columns.map((column) => {
     if (column.dataIndex === 'car' && completedOrders) {
@@ -122,7 +123,9 @@ const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
   );
 };
 
-export default connect((state) => ({
-  completedOrders: state.completedOrders,
-  clientId: state.client.id,
-}))(CompletedOrders);
+export default withRouter(
+  connect((state) => ({
+    completedOrders: state.completedOrders,
+    clientId: state.client.id,
+  }))(CompletedOrders)
+);

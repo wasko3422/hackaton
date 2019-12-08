@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import thunk from 'redux-thunk';
 import qs from 'qs';
 import { createStore, applyMiddleware } from 'redux';
@@ -31,20 +30,6 @@ const { Footer, Content } = Layout;
 const store = createStore(reducer, applyMiddleware(thunk));
 
 export default function App() {
-  // Make a request for a user with a given ID
-  axios
-    .get('/get-cities')
-    .then(function(response) {
-      // handle success
-      console.log(response);
-    })
-    .catch(function(error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function() {
-      // always executed
-    });
   return (
     <ConfigProvider locale={ruRU}>
       <Provider store={store}>

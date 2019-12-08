@@ -161,9 +161,9 @@ const getColumns = (dispatch) => [
   },
 ];
 
-function getAdminOrders(clientId) {
+function getAdminOrders(search) {
   return (dispatch) => {
-    axios.get(`/m-get-orders?client_id=${clientId}`).then((res) =>
+    axios.get(`/m-get-orders`).then((res) =>
       dispatch({
         type: 'FETCH_ADMIN_ORDERS',
         payload: res.data || [],
@@ -172,19 +172,11 @@ function getAdminOrders(clientId) {
   };
 }
 
-const AdminOrders = ({ adminOrders, dispatch, clientId, location }) => {
+const AdminOrders = ({ adminOrders, dispatch, location }) => {
   React.useEffect(() => {
-    dispatch(getAdminOrders(clientId));
-  }, [clientId]);
+    dispatch(getAdminOrders());
+  }, []);
 
-  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-  if (query.edit && adminOrders) {
-    const orderForEdit = adminOrders.find(
-      ({ order_id }) => `${order_id}` === query.edit
-    );
-
-    console.log('orderForEdit', orderForEdit);
-  }
   const filteredColumns = getColumns(dispatch).map((column) => {
     if (column.dataIndex === 'car' && adminOrders) {
       return {
