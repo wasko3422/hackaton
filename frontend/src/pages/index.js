@@ -39,7 +39,9 @@ const Index = () => (
         key="1"
       >
         <div className="tab-content">
-          <Cars />
+          <div className="cars-content">
+            <Cars />
+          </div>
         </div>
       </TabPane>
       <TabPane

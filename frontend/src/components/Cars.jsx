@@ -13,10 +13,12 @@ import {
   Empty,
   Timeline,
   Icon,
+  Typography,
 } from 'antd';
 
 import { connect } from 'react-redux';
-const { Meta } = Card;
+import './Cars.css';
+const { Title, Text } = Typography;
 
 function getCars(clientId) {
   return (dispatch) => {
@@ -37,9 +39,9 @@ const Cars = ({ cars, dispatch, clientId }) => {
   if (!cars) {
     return (
       <Row gutter={16}>
-        <Col span={8}>
+        <Col sm={24} md={12} xl={8}>
           <Card>
-            <Skeleton avatar active paragraph={{ rows: 4 }} />
+            <Skeleton active paragraph={{ rows: 8 }} />
           </Card>
         </Col>
       </Row>
@@ -63,19 +65,24 @@ const Cars = ({ cars, dispatch, clientId }) => {
           <Row gutter={16} key={chunk.map(({ car_id }) => car_id).join('-')}>
             {chunk.map((car) => {
               return (
-                <Col span={8} key={car.car_id}>
-                  <Card>
-                    <Meta
-                      avatar={
-                        <Avatar
-                          shape="square"
-                          size="large"
-                          src={car.car_logo_url}
-                        />
-                      }
-                      title={car.car_make}
-                      description={`Контракт ${car.contract_id}`}
-                    />
+                <Col sm={24} md={12} xl={8} key={car.car_id}>
+                  <Card style={{ marginBottom: 24 }}>
+                    <Row>
+                      <Col sm={24} md={12}>
+                        <Title level={4} className="cars-name">
+                          {car.car_make.toUpperCase()} {car.model}
+                        </Title>
+                      </Col>
+                      <Col sm={24} md={12}>
+                        <Title level={4} className="cars-license-plate">
+                          {car.car_license_plate.toUpperCase()}
+                        </Title>
+                      </Col>
+                    </Row>
+                    <p className="cars-contract">
+                      <Text type="secondary">Контракт {car.contract_id}</Text>
+                    </p>
+
                     <Divider style={{ margin: '40px 0' }}>
                       Техническое обслуживание
                     </Divider>
