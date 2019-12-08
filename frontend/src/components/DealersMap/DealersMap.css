@@ -21,7 +21,8 @@
   border-bottom: none;
 }
 
-.list .item .title {
+.list .item .title,
+.map .title {
   display: block;
   color: #e4002d;
   font-weight: 700;
