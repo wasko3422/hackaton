@@ -134,10 +134,11 @@ class NewRequestForm extends Component {
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Выберите автомобиль" required>
-          {getFieldDecorator(
-            'carId',
-            required
-          )(
+          {getFieldDecorator('carId', {
+            ...required,
+            initialValue:
+              cars && cars.length === 1 ? cars[0].car_id : undefined,
+          })(
             <CustomSelect
               options={
                 !cars
