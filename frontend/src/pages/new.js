@@ -28,13 +28,17 @@ const New = ({ dispatch }) => {
     >
       <Col lg={2} xl={4} xxl={6}></Col>
       <Col lg={20} xl={16} xxl={12}>
-        <Row gutter={[16, 16]} style={{ marginBottom: '1em' }}>
-          <Col md={8}>
+        <Row
+          gutter={[16, 16]}
+          style={{ flexWrap: 'wrap-reverse', marginBottom: '1em' }}
+          type="flex"
+        >
+          <Col xs={24} md={8}>
             <Title level={2} style={{ textAlign: 'center', paddingTop: 15 }}>
               Новая заявка
             </Title>
           </Col>
-          <Col md={16}>
+          <Col xs={24} md={16}>
             <SupportPhoneNumber />
           </Col>
         </Row>
