@@ -12,6 +12,7 @@ class ModelTimestamps(models.Model):
 
 class Client(ModelTimestamps):
     name = models.CharField(max_length=64)
+    client_number = models.CharField(max_length=128)
 
     def __str__(self):
         return self.name
@@ -79,6 +80,7 @@ class DealersModels(ModelTimestamps):
 class Contract(ModelTimestamps):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, related_name="contracts")
     car = models.OneToOneField(Car, on_delete=models.PROTECT, related_name='contract')
+    contract_number = models.CharField(max_length=128)
 
 
 class Order(ModelTimestamps):
