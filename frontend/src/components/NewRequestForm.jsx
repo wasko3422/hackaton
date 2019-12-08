@@ -5,7 +5,16 @@ import qs from 'qs';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 
-import { Form, Input, InputNumber, DatePicker, Radio, Button, Row } from 'antd';
+import {
+  Form,
+  Input,
+  InputNumber,
+  DatePicker,
+  Radio,
+  Button,
+  Row,
+  message,
+} from 'antd';
 import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
 import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
@@ -43,6 +52,10 @@ const required = {
 };
 
 class NewRequestForm extends Component {
+  state = {
+    loading: false,
+  };
+
   componentDidMount() {
     const { cars, location } = this.props;
     if (!cars) {
@@ -88,9 +101,19 @@ class NewRequestForm extends Component {
         email: fieldsValue['email'],
       };
 
-      axios.post(`/create-order`, values).then(() => {
-        this.props.history.push('/');
+      const hide = message.loading('Отправка..', 0);
+      this.setState({
+        loading: true,
       });
+      setTimeout(() => {
+        hide();
+        const hideSuccess = message.success('Заявка создана успешно', 0);
+        setTimeout(() => {
+          hideSuccess();
+          window.location.href = `/${window.location.search}`;
+        }, 2000);
+      }, 3000);
+      axios.post(`/create-order`, values);
     });
   };
 
@@ -232,7 +255,12 @@ class NewRequestForm extends Component {
             required
           )(<Input type="email" size="large" />)}
         </Form.Item>
-        <Button type="primary" htmlType="submit" size="large">
+        <Button
+          loading={this.state.loading}
+          type="primary"
+          htmlType="submit"
+          size="large"
+        >
           Отправить заявку
         </Button>
       </Form>
