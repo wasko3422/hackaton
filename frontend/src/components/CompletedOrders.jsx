@@ -22,7 +22,7 @@ const columns = [
   {
     title: 'Автомобиль',
     dataIndex: 'car',
-    defaultSortOrder: 'descend',
+    width: 350,
     render: getCarName,
     sorter: (a, b) => {
       const nameA = getCarName(a.car);
@@ -42,13 +42,14 @@ const columns = [
   },
   {
     title: 'Пробег',
+    width: 100,
     dataIndex: 'job_done.mileage',
   },
   {
     title: 'Дата выполнения заказа',
     dataIndex: 'job_done.date',
     defaultSortOrder: 'descend',
-    width: 350,
+    width: 180,
     sorter: (a, b) => {
       if (a < b) {
         return -1;
@@ -107,6 +108,7 @@ const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
   return (
     <Table
       scroll={{ x: 992 }}
+      rowKey={(record) => record.job_done_id}
       columns={filteredColumns}
       dataSource={completedOrders}
       loading={!completedOrders}

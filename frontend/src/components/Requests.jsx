@@ -2,6 +2,7 @@
 
 import React from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -21,7 +22,6 @@ const columns = [
   {
     title: 'Автомобиль',
     dataIndex: 'car',
-    defaultSortOrder: 'descend',
     render: getCarName,
     width: 350,
     sorter: (a, b) => {
@@ -42,6 +42,7 @@ const columns = [
   },
   {
     title: 'Пробег',
+    width: 100,
     dataIndex: 'order.mileage',
   },
   {
@@ -58,6 +59,64 @@ const columns = [
           })}
         </span>
       );
+    },
+  },
+  {
+    title: 'Дата создания заявки',
+    dataIndex: 'order.created_at',
+    defaultSortOrder: 'descend',
+    width: 180,
+    sorter: (a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+
+      return 0;
+    },
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Предполагаемая дата',
+    dataIndex: 'order.date_expected',
+    width: 180,
+    sorter: (a, b) => {
+      if (a < b) {
+        return -1;
+      }
+      if (a > b) {
+        return 1;
+      }
+
+      return 0;
+    },
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Дилер',
+    dataIndex: 'order.dealer_name',
+  },
+  {
+    title: 'Статус',
+    dataIndex: 'order.status',
+    width: 140,
+    render: (status) => {
+      if (status === 'created') {
+        return <Tag color="geekblue">Создана</Tag>;
+      }
+      if (status === 'sent') {
+        return <Tag color="green">Отправлена дилеру</Tag>;
+      }
+      if (status === 'pending') {
+        return <Tag color="orange">В обработке</Tag>;
+      }
+      return status;
     },
   },
 ];
@@ -97,9 +156,13 @@ const Requests = ({ requests, dispatch, clientId }) => {
     return column;
   });
 
+  console.log('requests', requests);
+
   return (
     <Table
       columns={filteredColumns}
+      scroll={{ x: 1600 }}
+      rowKey={(record) => record.order_id}
       dataSource={requests}
       loading={!requests}
       pagination={{
