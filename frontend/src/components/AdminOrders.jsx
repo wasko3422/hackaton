@@ -3,9 +3,12 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import qs from 'qs';
+import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Table, Tag, Popconfirm, message } from 'antd';
+import AdminOrderEdit from './AdminOrderEdit';
 
 import './AdminOrders.css';
 
@@ -111,8 +114,11 @@ const getColumns = (dispatch) => [
       if (status === 'sent') {
         return <Tag color="green">Отправлена дилеру</Tag>;
       }
-      if (status === 'pending') {
-        return <Tag color="orange">В обработке</Tag>;
+      if (status === 'in_progress') {
+        return <Tag color="orange">В работе</Tag>;
+      }
+      if (status === 'declined') {
+        return <Tag color="red">Отклонено</Tag>;
       }
       return status;
     },
@@ -140,7 +146,7 @@ const getColumns = (dispatch) => [
     width: 100,
     render: (_, { order_id }) => (
       <span>
-        <a>изменить</a>
+        <Link to={`/administrate?edit=${order_id}`}>изменить</Link>
         <br />
         <Popconfirm
           title="Вы уверены?"
@@ -167,11 +173,23 @@ function getAdminOrders(clientId) {
   };
 }
 
-const AdminOrders = ({ adminOrders, dispatch, clientId }) => {
+const AdminOrders = ({ adminOrders, dispatch, clientId, location }) => {
   React.useEffect(() => {
     dispatch(getAdminOrders(clientId));
   }, [clientId]);
 
+  const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+  if (query.edit && adminOrders) {
+    const orderForEdit = adminOrders.find(
+      ({ order_id }) => `${order_id}` === query.edit
+    );
+
+    console.log('orderForEdit', orderForEdit);
+
+    if (orderForEdit) {
+      return <AdminOrderEdit order={orderForEdit} />;
+    }
+  }
   const filteredColumns = getColumns(dispatch).map((column) => {
     if (column.dataIndex === 'car' && adminOrders) {
       return {
@@ -210,7 +228,9 @@ const AdminOrders = ({ adminOrders, dispatch, clientId }) => {
   );
 };
 
-export default connect((state) => ({
-  adminOrders: state.adminOrders,
-  clientId: state.client.id,
-}))(AdminOrders);
+export default withRouter(
+  connect((state) => ({
+    adminOrders: state.adminOrders,
+    clientId: state.client.id,
+  }))(AdminOrders)
+);

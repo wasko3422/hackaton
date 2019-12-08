@@ -3,6 +3,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import qs from 'qs';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -113,8 +114,11 @@ const columns = [
       if (status === 'sent') {
         return <Tag color="green">Отправлена дилеру</Tag>;
       }
-      if (status === 'pending') {
+      if (status === 'in_progress') {
         return <Tag color="orange">В обработке</Tag>;
+      }
+      if (status === 'declined') {
+        return <Tag color="red">Отклонено</Tag>;
       }
       return status;
     },
