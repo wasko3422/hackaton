@@ -94,11 +94,22 @@ const Cars = ({ cars, dispatch, location }) => {
                             color="red"
                           >
                             <p>
+                              {moment(car.car_next_service.date).diff(
+                                '2019-12-08T12:51:14.464Z',
+                                'days'
+                              ) <= 15 ? (
+                                <Icon
+                                  type="warning"
+                                  theme="twoTone"
+                                  twoToneColor="#f5222d"
+                                />
+                              ) : null}{' '}
                               Следующее{' '}
                               {moment(car.car_next_service.date).format(
                                 'DD.MM.YYYY'
                               )}
                             </p>
+
                             <p>Пробег {car.car_next_service.mileage} км</p>
                           </Timeline.Item>
                         )}
