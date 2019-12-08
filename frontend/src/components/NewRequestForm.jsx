@@ -31,8 +31,7 @@ const formItemLayout = {
   },
   wrapperCol: {
     sm: { span: 24 },
-    md: { span: 11, offset: 1 },
-    lg: { span: 8 },
+    md: { span: 12 },
   },
 };
 
@@ -133,11 +132,10 @@ class NewRequestForm extends Component {
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Выберите автомобиль" required>
-          {getFieldDecorator('carId', {
-            ...required,
-            initialValue:
-              cars && cars.length === 1 ? cars[0].car_id : undefined,
-          })(
+          {getFieldDecorator(
+            'carId',
+            required
+          )(
             <CustomSelect
               options={
                 !cars
