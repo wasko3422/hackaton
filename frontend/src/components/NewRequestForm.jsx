@@ -119,7 +119,14 @@ class NewRequestForm extends Component {
         </Form.Item>
         {isMapShown && (
           <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
-            <DealersMap />
+            {getFieldDecorator('dealerId', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Обязательное поле',
+                },
+              ],
+            })(<DealersMap />)}
           </Form.Item>
         )}
         <Form.Item label="Укажите текущий пробег автомобиля">

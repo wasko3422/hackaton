@@ -45,6 +45,7 @@ class DealersMap extends Component {
   onTitleClick = (id, coords) => {
     if (this.state.map) {
       this.setState({ activeFeatureId: id }, () => {
+        this.props.onChange(id);
         this.state.map.jumpTo({
           center: coords,
           zoom: 15,
@@ -56,6 +57,7 @@ class DealersMap extends Component {
   onMapClick = () => {
     if (this.state.activeFeatureId) {
       this.setState({ activeFeatureId: null });
+      this.props.onChange(null);
     }
   };
 

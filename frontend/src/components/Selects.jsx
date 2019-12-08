@@ -27,7 +27,7 @@ export class CustomSelect extends Component {
         notFoundContent={null}
         showArrow={false}
         filterOption={(input, option) =>
-          option.props.value.toLowerCase().includes(input.toLowerCase())
+          option.props.children.toLowerCase().includes(input.toLowerCase())
         }
         {...this.props}
       >
