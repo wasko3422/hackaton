@@ -1,13 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React from 'react';
-import axios from 'axios';
 import _ from 'lodash';
 import {
   Card,
   Col,
   Row,
-  Avatar,
   Divider,
   Skeleton,
   Empty,
@@ -17,19 +15,11 @@ import {
 } from 'antd';
 
 import { connect } from 'react-redux';
-import './Cars.css';
-const { Title, Text } = Typography;
+import { getCars } from '../redux/getters';
 
-function getCars(clientId) {
-  return (dispatch) => {
-    axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
-      dispatch({
-        type: 'FETCH_CARS',
-        payload: res.data || [],
-      })
-    );
-  };
-}
+import './Cars.css';
+
+const { Title, Text } = Typography;
 
 const Cars = ({ cars, dispatch, clientId }) => {
   React.useEffect(() => {

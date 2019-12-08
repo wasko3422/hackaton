@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import { Form, Input, DatePicker, Radio, Button, Row } from 'antd';
 import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
 import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
+import {
+  getCars,
+  getCities,
+  getCityCoords,
+  getDealers,
+  getJobs,
+} from '../redux/getters';
 
 const { TextArea } = Input;
 
@@ -22,35 +28,20 @@ const formItemLayout = {
   },
 };
 
-function getCityCoords(query, accessToken) {
-  return (dispatch) => {
-    axios
-      .get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?limit=1&access_token=${accessToken}`
-      )
-      .then((res) =>
-        dispatch({
-          type: 'FETCH_CITY_COORDS',
-          payload: res.data || [],
-        })
-      );
-  };
-}
-
-function getCities() {
-  return (dispatch) => {
-    axios.get('/get-cities').then((res) =>
-      dispatch({
-        type: 'FETCH_CITIES',
-        payload: res.data || [],
-      })
-    );
-  };
-}
+const options = {
+  onFieldsChange(props, changedFields) {
+    props.onChange(changedFields);
+  },
+};
 
 class NewRequestForm extends Component {
   componentDidMount() {
+    const { cars, clientId } = this.props;
+    if (!cars) {
+      this.props.dispatch(getCars(clientId));
+    }
     this.props.dispatch(getCities());
+    this.props.dispatch(getJobs());
   }
 
   handleSubmit = (e) => {
@@ -63,7 +54,7 @@ class NewRequestForm extends Component {
       }
       const values = {
         ...fieldsValue,
-        date: fieldsValue['date'].format('YYYY-MM-DD'),
+        date: fieldsValue['date'] && fieldsValue['date'].format('YYYY-MM-DD'),
       };
       console.log('Received values of form: ', values);
     });
@@ -71,22 +62,36 @@ class NewRequestForm extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { cities, cityCoords } = this.props;
-
+    const { cars, cities, cityCoords, jobs, formState } = this.props;
+    const { cityId, carId } = formState;
+    // console.log('TCL: NewRequestForm -> render -> cars', cars);
+    const isMapShown = cityCoords && cityCoords.features[0] && carId && cityId;
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Выберите автомобиль" required>
-          {getFieldDecorator('carNumber', {
+          {getFieldDecorator('carId', {
             rules: [
               {
                 required: true,
                 message: 'Обязательное поле',
               },
             ],
-          })(<CustomSelect options={[]} size="large" />)}
+          })(
+            <CustomSelect
+              options={
+                !cars
+                  ? []
+                  : cars.map(({ car_id, car_make }) => ({
+                      value: car_id,
+                      label: `${car_make}`,
+                    }))
+              }
+              size="large"
+            />
+          )}
         </Form.Item>
         <Form.Item label="Выберите город обслуживания" required>
-          {getFieldDecorator('city', {
+          {getFieldDecorator('cityId', {
             rules: [
               {
                 required: true,
@@ -105,13 +110,15 @@ class NewRequestForm extends Component {
                   : []
               }
               size="large"
-              onChange={(label) => {
-                this.props.dispatch(getCityCoords(label, ACCESS_TOKEN));
+              onChange={(value) => {
+                const query = cities.find(({ city_id }) => city_id === value)
+                  .city_name;
+                this.props.dispatch(getCityCoords(query, ACCESS_TOKEN));
               }}
             />
           )}
         </Form.Item>
-        {cityCoords && cityCoords.features[0] && (
+        {isMapShown && (
           <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
             <DealersMap />
           </Form.Item>
@@ -131,11 +138,14 @@ class NewRequestForm extends Component {
             <CheckboxGroup
               getFieldDecorator={getFieldDecorator}
               name="services"
-              options={[
-                'Регулярное ТО',
-                'Замена щёток стеклоочистителя',
-                'Долив масла',
-              ]}
+              options={
+                !jobs
+                  ? []
+                  : jobs.map(({ job_type_id, job_type }) => ({
+                      value: job_type_id,
+                      label: job_type,
+                    }))
+              }
             />
           </Row>
           <Row>
@@ -178,10 +188,14 @@ class NewRequestForm extends Component {
     );
   }
 }
-const CreatedForm = Form.create({ name: 'request' })(NewRequestForm);
+const CreatedForm = Form.create({ name: 'request', ...options })(
+  NewRequestForm
+);
 
 export default connect((state) => ({
+  cars: state.cars,
   cities: state.cities,
   cityCoords: state.cityCoords,
+  jobs: state.jobs,
   clientId: state.client.id,
 }))(CreatedForm);
