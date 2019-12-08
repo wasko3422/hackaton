@@ -76,7 +76,7 @@ class OrderSerializer:
             'order': {
                 'mileage': order.mileage,
                 'jobs': jobs,
-                'dealer_name': order.dealer.name,
+                'dealer_name': order.dealer.name if order.dealer else '',
                 'created_at': order.created_at,
                 'date_expected': order.date_expected,
                 'status': order.status,
