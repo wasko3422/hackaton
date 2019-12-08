@@ -79,11 +79,13 @@ class CreateOrderView(APIView):
 
         client_id, contract_id, city_id, dealer_id = data.get('client_id'), data.get('contract_id'), data.get('city_id'), data.get('dealer_id')
         name, surname, phone, email = data.get('name'), data.get('surname'), data.get('phone'), data.get('email')
-        if not (client_id and contract_id and city_id and name and surname and phone and email):
+        if not (contract_id and city_id and name and surname and phone and email):
             return JsonResponse({"error": "required params are missing"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        client = get_or_none(Client, id=client_id)
         contract = get_or_none(Contract, id=contract_id)
+        client = get_or_none(Client, id=client_id)
+        if not client:
+            client = contract.client
         city = get_or_none(City, id=city_id)
         dealer = get_or_none(Dealer, id=dealer_id)
 
