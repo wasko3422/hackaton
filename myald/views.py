@@ -165,7 +165,6 @@ class OrdersView(APIView):
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
         else:
             contract_id = request.GET.get('contract_id')
-            print(contract_id)
             orders = Order.objects.filter(contract=contract_id)
             result = [serialiazers.OrderSerializer().serialize(i) for i in orders]
             return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
