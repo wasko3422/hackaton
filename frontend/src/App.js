@@ -5,6 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './redux/reducer';
 import Index from './pages/index';
+import Login from './pages/login';
 import Header from './components/Header';
 import New from './pages/new';
 import './App.css';
@@ -43,16 +44,24 @@ export default function App() {
         <Router>
           <Layout className="layout">
             <Header />
-            <Content className="content">
-              <Switch>
-                <Route path="/new">
+            <Switch>
+              <Route path="/login">
+                <Content className="content">
+                  <Login />
+                </Content>
+              </Route>
+              <Route path="/new">
+                <Content className="content">
                   <New />
-                </Route>
-                <Route path="/" exact>
+                </Content>
+              </Route>
+              <Route path="/" exact>
+                <Content className="content">
                   <Index />
-                </Route>
-              </Switch>
-            </Content>
+                </Content>
+              </Route>
+            </Switch>
+
             <Footer style={{ textAlign: 'center' }}>
               Rosbank Tech.Madness ©2019 Created by Island Pilots
             </Footer>
