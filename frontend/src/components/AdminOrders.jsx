@@ -1,0 +1,182 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import React from 'react';
+import axios from 'axios';
+import moment from 'moment';
+import { connect } from 'react-redux';
+
+import { Table, Tag } from 'antd';
+
+import './AdminOrders.css';
+
+const getCarName = (car) => {
+  return `${car.make.toUpperCase()} ${
+    car.model
+  } / ${car.car_license_plate.toUpperCase()}`;
+};
+
+const columns = [
+  {
+    title: 'ID',
+    dataIndex: 'order_id',
+    width: 100,
+  },
+  // {
+  //   title: 'Автомобиль',
+  //   dataIndex: 'car',
+  //   render: getCarName,
+  //   width: 350,
+  //   sorter: (a, b) => {
+  //     const nameA = getCarName(a.car);
+  //     const nameB = getCarName(b.car);
+  //     if (nameA < nameB) {
+  //       return -1;
+  //     }
+  //     if (nameA > nameB) {
+  //       return 1;
+  //     }
+
+  //     return 0;
+  //   },
+  //   onFilter: (value, record) => {
+  //     return `${record.car.make.toUpperCase()} ${record.car.model}` === value;
+  //   },
+  // },
+  // {
+  //   title: 'Пробег',
+  //   width: 100,
+  //   dataIndex: 'order.mileage',
+  // },
+  // {
+  //   title: 'Перечень работ',
+  //   dataIndex: 'order.jobs',
+  //   render: (jobs, _, index) => {
+  //     if (!jobs.length) {
+  //       return <span>-</span>;
+  //     }
+  //     return (
+  //       <span key={index}>
+  //         {jobs.map((job) => {
+  //           return <Tag key={job}>{job.toUpperCase()}</Tag>;
+  //         })}
+  //       </span>
+  //     );
+  //   },
+  // },
+  // {
+  //   title: 'Дата создания заявки',
+  //   dataIndex: 'order.created_at',
+  //   defaultSortOrder: 'descend',
+  //   width: 180,
+  //   sorter: (a, b) => {
+  //     if (a < b) {
+  //       return -1;
+  //     }
+  //     if (a > b) {
+  //       return 1;
+  //     }
+
+  //     return 0;
+  //   },
+  //   render: (date) => {
+  //     return date ? moment(date).format('DD.MM.YYYY') : '-';
+  //   },
+  // },
+  // {
+  //   title: 'Предполагаемая дата',
+  //   dataIndex: 'order.date_expected',
+  //   width: 180,
+  //   sorter: (a, b) => {
+  //     if (a < b) {
+  //       return -1;
+  //     }
+  //     if (a > b) {
+  //       return 1;
+  //     }
+
+  //     return 0;
+  //   },
+  //   render: (date) => {
+  //     return date ? moment(date).format('DD.MM.YYYY') : '-';
+  //   },
+  // },
+  // {
+  //   title: 'Дилер',
+  //   dataIndex: 'order.dealer_name',
+  // },
+  // {
+  //   title: 'Статус',
+  //   dataIndex: 'order.status',
+  //   width: 140,
+  //   render: (status) => {
+  //     if (status === 'created') {
+  //       return <Tag color="geekblue">Создана</Tag>;
+  //     }
+  //     if (status === 'sent') {
+  //       return <Tag color="green">Отправлена дилеру</Tag>;
+  //     }
+  //     if (status === 'pending') {
+  //       return <Tag color="orange">В обработке</Tag>;
+  //     }
+  //     return status;
+  //   },
+  // },
+];
+
+function getAdminOrders(clientId) {
+  return (dispatch) => {
+    axios.get(`/m-get-orders?client_id=${clientId}`).then((res) =>
+      dispatch({
+        type: 'FETCH_ADMIN_ORDERS',
+        payload: res.data || [],
+      })
+    );
+  };
+}
+
+const AdminOrders = ({ adminOrders, dispatch, clientId }) => {
+  React.useEffect(() => {
+    dispatch(getAdminOrders(clientId));
+  }, [clientId]);
+
+  // const filteredColumns = columns.map((column) => {
+  //   if (column.dataIndex === 'car' && requests) {
+  //     return {
+  //       ...column,
+  //       filters: requests.reduce((acc, record) => {
+  //         const name = `${record.car.make.toUpperCase()} ${record.car.model}`;
+  //         if (acc.some((filter) => filter.value === name)) {
+  //           return acc;
+  //         }
+  //         return acc.concat({
+  //           text: name,
+  //           value: name,
+  //         });
+  //       }, []),
+  //     };
+  //   }
+  //   return column;
+  // });
+
+  console.log('adminOrders', adminOrders);
+
+  return (
+    <Table
+      columns={columns}
+      scroll={{ x: 1600 }}
+      rowKey={(record) => record.order_id}
+      dataSource={adminOrders}
+      loading={!adminOrders}
+      pagination={{
+        style: {
+          marginRight: 15,
+        },
+      }}
+    />
+  );
+};
+
+export default connect((state) => ({
+  adminOrders: state.adminOrders,
+  clientId: state.client.id,
+}))(AdminOrders);

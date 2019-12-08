@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import reducer from './redux/reducer';
 import Index from './pages/index';
 import Login from './pages/login';
+import Administrate from './pages/administrate';
 import Header from './components/Header';
 import New from './pages/new';
 import './App.css';
@@ -44,24 +45,22 @@ export default function App() {
         <Router>
           <Layout className="layout">
             <Header />
-            <Switch>
-              <Route path="/login">
-                <Content className="content">
+            <Content className="content">
+              <Switch>
+                <Route path="/login">
                   <Login />
-                </Content>
-              </Route>
-              <Route path="/new">
-                <Content className="content">
+                </Route>
+                <Route path="/new">
                   <New />
-                </Content>
-              </Route>
-              <Route path="/" exact>
-                <Content className="content">
+                </Route>
+                <Route path="/administrate">
+                  <Administrate />
+                </Route>
+                <Route path="/" exact>
                   <Index />
-                </Content>
-              </Route>
-            </Switch>
-
+                </Route>
+              </Switch>
+            </Content>
             <Footer style={{ textAlign: 'center' }}>
               Rosbank Tech.Madness ©2019 Created by Island Pilots
             </Footer>
