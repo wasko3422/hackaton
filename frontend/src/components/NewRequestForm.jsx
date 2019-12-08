@@ -62,7 +62,6 @@ class NewRequestForm extends Component {
         ...fieldsValue,
         date: fieldsValue['date'] && fieldsValue['date'].format('YYYY-MM-DD'),
       };
-      console.log('Received values of form: ', values);
     });
   };
 
