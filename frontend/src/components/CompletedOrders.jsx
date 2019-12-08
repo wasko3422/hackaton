@@ -48,6 +48,7 @@ const columns = [
     title: 'Дата выполнения заказа',
     dataIndex: 'job_done.date',
     defaultSortOrder: 'descend',
+    width: 350,
     sorter: (a, b) => {
       if (a < b) {
         return -1;
@@ -67,10 +68,6 @@ const columns = [
     dataIndex: 'job_done.dealer_name',
   },
 ];
-
-function onChange(pagination, filters, sorter, extra) {
-  console.log('params', pagination, filters, sorter, extra);
-}
 
 function getCompletedOrders(clientId) {
   return (dispatch) => {
@@ -112,7 +109,6 @@ const CompletedOrders = ({ completedOrders, dispatch, clientId }) => {
       scroll={{ x: 992 }}
       columns={filteredColumns}
       dataSource={completedOrders}
-      onChange={onChange}
       loading={!completedOrders}
       pagination={{
         style: {

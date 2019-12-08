@@ -6,6 +6,12 @@ import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
 
+const getCarName = (car) => {
+  return `${car.make.toUpperCase()} ${
+    car.model
+  } / ${car.car_license_plate.toUpperCase()}`;
+};
+
 const columns = [
   {
     title: 'ID',
@@ -14,9 +20,25 @@ const columns = [
   },
   {
     title: 'Автомобиль',
-    dataIndex: 'car.car_license_plate',
+    dataIndex: 'car',
     defaultSortOrder: 'descend',
-    sorter: (a, b) => a.age - b.age,
+    render: getCarName,
+    width: 350,
+    sorter: (a, b) => {
+      const nameA = getCarName(a.car);
+      const nameB = getCarName(b.car);
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    },
+    onFilter: (value, record) => {
+      return `${record.car.make.toUpperCase()} ${record.car.model}` === value;
+    },
   },
   {
     title: 'Пробег',
@@ -40,10 +62,6 @@ const columns = [
   },
 ];
 
-function onChange(pagination, filters, sorter, extra) {
-  console.log('params', pagination, filters, sorter, extra);
-}
-
 function getRequests(clientId) {
   return (dispatch) => {
     axios.get(`/get-orders?client_id=${clientId}`).then((res) =>
@@ -60,13 +78,30 @@ const Requests = ({ requests, dispatch, clientId }) => {
     dispatch(getRequests(clientId));
   }, [clientId]);
 
-  console.log('requests', requests);
+  const filteredColumns = columns.map((column) => {
+    if (column.dataIndex === 'car' && requests) {
+      return {
+        ...column,
+        filters: requests.reduce((acc, record) => {
+          const name = `${record.car.make.toUpperCase()} ${record.car.model}`;
+          if (acc.some((filter) => filter.value === name)) {
+            return acc;
+          }
+          return acc.concat({
+            text: name,
+            value: name,
+          });
+        }, []),
+      };
+    }
+    return column;
+  });
 
   return (
     <Table
-      columns={columns}
+      columns={filteredColumns}
       dataSource={requests}
-      onChange={onChange}
+      loading={!requests}
       pagination={{
         style: {
           marginRight: 15,
