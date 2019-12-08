@@ -3,7 +3,6 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import qs from 'qs';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -19,6 +18,7 @@ const columns = [
     title: 'ID',
     dataIndex: 'order_id',
     width: 100,
+    sorter: (a, b) => a.order_id - b.order_id,
   },
   {
     title: 'Автомобиль',

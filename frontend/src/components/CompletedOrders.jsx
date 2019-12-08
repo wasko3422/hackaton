@@ -18,6 +18,7 @@ const columns = [
     title: 'ID',
     dataIndex: 'job_done_id',
     width: 100,
+    sorter: (a, b) => a.job_done_id - b.job_done_id,
   },
   {
     title: 'Автомобиль',
