@@ -5,9 +5,14 @@ import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
 
-import { Table, Tag } from 'antd';
+import { Table, Tag, Popconfirm, message } from 'antd';
 
 import './AdminOrders.css';
+
+function confirm(e) {
+  console.log(e);
+  message.success('Click on Yes');
+}
 
 const getCarName = (car) => {
   return `${car.make.toUpperCase()} ${
@@ -20,107 +25,120 @@ const columns = [
     title: 'ID',
     dataIndex: 'order_id',
     width: 100,
+    defaultSortOrder: 'descend',
+    sorter: (a, b) => a.order_id - b.order_id,
   },
-  // {
-  //   title: 'Автомобиль',
-  //   dataIndex: 'car',
-  //   render: getCarName,
-  //   width: 350,
-  //   sorter: (a, b) => {
-  //     const nameA = getCarName(a.car);
-  //     const nameB = getCarName(b.car);
-  //     if (nameA < nameB) {
-  //       return -1;
-  //     }
-  //     if (nameA > nameB) {
-  //       return 1;
-  //     }
+  {
+    title: 'Контракт',
+    dataIndex: 'contract_id',
+    width: 100,
+  },
+  {
+    title: 'Автомобиль',
+    dataIndex: 'car',
+    render: getCarName,
+    width: 350,
+    sorter: (a, b) => {
+      const nameA = getCarName(a.car);
+      const nameB = getCarName(b.car);
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
 
-  //     return 0;
-  //   },
-  //   onFilter: (value, record) => {
-  //     return `${record.car.make.toUpperCase()} ${record.car.model}` === value;
-  //   },
-  // },
-  // {
-  //   title: 'Пробег',
-  //   width: 100,
-  //   dataIndex: 'order.mileage',
-  // },
-  // {
-  //   title: 'Перечень работ',
-  //   dataIndex: 'order.jobs',
-  //   render: (jobs, _, index) => {
-  //     if (!jobs.length) {
-  //       return <span>-</span>;
-  //     }
-  //     return (
-  //       <span key={index}>
-  //         {jobs.map((job) => {
-  //           return <Tag key={job}>{job.toUpperCase()}</Tag>;
-  //         })}
-  //       </span>
-  //     );
-  //   },
-  // },
-  // {
-  //   title: 'Дата создания заявки',
-  //   dataIndex: 'order.created_at',
-  //   defaultSortOrder: 'descend',
-  //   width: 180,
-  //   sorter: (a, b) => {
-  //     if (a < b) {
-  //       return -1;
-  //     }
-  //     if (a > b) {
-  //       return 1;
-  //     }
-
-  //     return 0;
-  //   },
-  //   render: (date) => {
-  //     return date ? moment(date).format('DD.MM.YYYY') : '-';
-  //   },
-  // },
-  // {
-  //   title: 'Предполагаемая дата',
-  //   dataIndex: 'order.date_expected',
-  //   width: 180,
-  //   sorter: (a, b) => {
-  //     if (a < b) {
-  //       return -1;
-  //     }
-  //     if (a > b) {
-  //       return 1;
-  //     }
-
-  //     return 0;
-  //   },
-  //   render: (date) => {
-  //     return date ? moment(date).format('DD.MM.YYYY') : '-';
-  //   },
-  // },
-  // {
-  //   title: 'Дилер',
-  //   dataIndex: 'order.dealer_name',
-  // },
-  // {
-  //   title: 'Статус',
-  //   dataIndex: 'order.status',
-  //   width: 140,
-  //   render: (status) => {
-  //     if (status === 'created') {
-  //       return <Tag color="geekblue">Создана</Tag>;
-  //     }
-  //     if (status === 'sent') {
-  //       return <Tag color="green">Отправлена дилеру</Tag>;
-  //     }
-  //     if (status === 'pending') {
-  //       return <Tag color="orange">В обработке</Tag>;
-  //     }
-  //     return status;
-  //   },
-  // },
+      return 0;
+    },
+    onFilter: (value, record) => {
+      return `${record.car.make.toUpperCase()} ${record.car.model}` === value;
+    },
+  },
+  {
+    title: 'Город',
+    dataIndex: 'city_name',
+    width: 100,
+  },
+  {
+    title: 'Дилер',
+    dataIndex: 'order.dealer_name',
+    width: 250,
+  },
+  {
+    title: 'ТО',
+    dataIndex: 'order.main_service',
+    width: 70,
+    render: (service) => {
+      if (service) {
+        return 'Да';
+      }
+      return 'Нет';
+    },
+  },
+  {
+    title: 'Перечень работ',
+    dataIndex: 'order.jobs',
+    render: (jobs, _, index) => {
+      if (!jobs || !jobs.length) {
+        return '-';
+      }
+      return jobs.map(({ job_name }) => job_name).join(', ');
+    },
+  },
+  {
+    title: 'Статус',
+    dataIndex: 'order.status',
+    width: 165,
+    render: (status) => {
+      if (status === 'created') {
+        return <Tag color="geekblue">Создана</Tag>;
+      }
+      if (status === 'sent') {
+        return <Tag color="green">Отправлена дилеру</Tag>;
+      }
+      if (status === 'pending') {
+        return <Tag color="orange">В обработке</Tag>;
+      }
+      return status;
+    },
+  },
+  {
+    title: 'Дата создания заявки',
+    dataIndex: 'order.created_at',
+    width: 180,
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Предполагаемая дата',
+    dataIndex: 'order.date_expected',
+    width: 180,
+    render: (date) => {
+      return date ? moment(date).format('DD.MM.YYYY') : '-';
+    },
+  },
+  {
+    title: 'Действия',
+    key: 'operation',
+    fixed: 'right',
+    width: 100,
+    render: () => (
+      <span>
+        <a>изменить</a>
+        <br />
+        <Popconfirm
+          title="Вы уверены?"
+          onConfirm={confirm}
+          okText="Да"
+          cancelText="Нет"
+          placement="bottomRight"
+        >
+          <a style={{ color: '#f5222d' }}>удалить</a>
+        </Popconfirm>
+      </span>
+    ),
+  },
 ];
 
 function getAdminOrders(clientId) {
@@ -139,34 +157,35 @@ const AdminOrders = ({ adminOrders, dispatch, clientId }) => {
     dispatch(getAdminOrders(clientId));
   }, [clientId]);
 
-  // const filteredColumns = columns.map((column) => {
-  //   if (column.dataIndex === 'car' && requests) {
-  //     return {
-  //       ...column,
-  //       filters: requests.reduce((acc, record) => {
-  //         const name = `${record.car.make.toUpperCase()} ${record.car.model}`;
-  //         if (acc.some((filter) => filter.value === name)) {
-  //           return acc;
-  //         }
-  //         return acc.concat({
-  //           text: name,
-  //           value: name,
-  //         });
-  //       }, []),
-  //     };
-  //   }
-  //   return column;
-  // });
+  const filteredColumns = columns.map((column) => {
+    if (column.dataIndex === 'car' && adminOrders) {
+      return {
+        ...column,
+        filters: adminOrders.reduce((acc, record) => {
+          const name = `${record.car.make.toUpperCase()} ${record.car.model}`;
+          if (acc.some((filter) => filter.value === name)) {
+            return acc;
+          }
+          return acc.concat({
+            text: name,
+            value: name,
+          });
+        }, []),
+      };
+    }
+    return column;
+  });
 
   console.log('adminOrders', adminOrders);
 
   return (
     <Table
-      columns={columns}
-      scroll={{ x: 1600 }}
+      columns={filteredColumns}
+      scroll={{ x: 1900 }}
       rowKey={(record) => record.order_id}
       dataSource={adminOrders}
       loading={!adminOrders}
+      bordered
       pagination={{
         style: {
           marginRight: 15,
