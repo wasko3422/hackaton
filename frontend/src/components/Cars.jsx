@@ -2,6 +2,7 @@
 
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import {
   Card,
   Col,
@@ -48,6 +49,8 @@ const Cars = ({ cars, dispatch, clientId }) => {
     );
   }
 
+  console.log('cars', cars);
+
   return (
     <>
       {_.chunk(cars, 3).map((chunk) => {
@@ -77,22 +80,40 @@ const Cars = ({ cars, dispatch, clientId }) => {
                       Техническое обслуживание
                     </Divider>
                     <Timeline pending=" " pendingDot={<Icon type="tool" />}>
-                      <Timeline.Item
-                        dot={
-                          <Icon
-                            type="clock-circle-o"
-                            style={{ fontSize: '16px' }}
-                          />
-                        }
-                        color="red"
-                      >
-                        <p>Следующее 2015-09-01</p>
-                        <p>Пробег 20000 км</p>
-                      </Timeline.Item>
-                      <Timeline.Item>
-                        <p>Последнее 2015-09-01</p>
-                        <p>Пробег 10000 км</p>
-                      </Timeline.Item>
+                      {car.car_next_service &&
+                        car.car_next_service.date &&
+                        car.car_next_service.mileage && (
+                          <Timeline.Item
+                            dot={
+                              <Icon
+                                type="clock-circle-o"
+                                style={{ fontSize: '16px' }}
+                              />
+                            }
+                            color="red"
+                          >
+                            <p>
+                              Следующее{' '}
+                              {moment(car.car_next_service.date).format(
+                                'DD.MM.YYYY'
+                              )}
+                            </p>
+                            <p>Пробег {car.car_next_service.mileage} км</p>
+                          </Timeline.Item>
+                        )}
+                      {car.car_last_service &&
+                        car.car_last_service.date &&
+                        car.car_last_service.mileage && (
+                          <Timeline.Item>
+                            <p>
+                              Следующее{' '}
+                              {moment(car.car_last_service.date).format(
+                                'DD.MM.YYYY'
+                              )}
+                            </p>
+                            <p>Пробег {car.car_last_service.mileage} км</p>
+                          </Timeline.Item>
+                        )}
                     </Timeline>
                   </Card>
                 </Col>
