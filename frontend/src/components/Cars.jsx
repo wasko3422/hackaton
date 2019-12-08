@@ -109,7 +109,7 @@ const Cars = ({ cars, dispatch, location }) => {
                         car.car_last_service.mileage && (
                           <Timeline.Item>
                             <p>
-                              Следующее{' '}
+                              Последнее{' '}
                               {moment(car.car_last_service.date).format(
                                 'DD.MM.YYYY'
                               )}
