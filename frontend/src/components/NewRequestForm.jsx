@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
+import qs from 'qs';
+import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 
 import { Form, Input, InputNumber, DatePicker, Radio, Button, Row } from 'antd';
@@ -58,10 +60,37 @@ class NewRequestForm extends Component {
       if (err) {
         return;
       }
+      const query = qs.parse(window.location.search, {
+        ignoreQueryPrefix: true,
+      });
+
+      const contractId =
+        query.contract_id ||
+        this.props.cars.find(({ car_id }) => {
+          return car_id === fieldsValue['carId'];
+        }).contract_id;
+
       const values = {
-        ...fieldsValue,
-        date: fieldsValue['date'] && fieldsValue['date'].format('YYYY-MM-DD'),
+        client_id: query.client_id,
+        city_id: fieldsValue['cityId'],
+        contract_id: contractId,
+        car_id: fieldsValue['carId'],
+        mileage: fieldsValue['mileage'],
+        dealer_id: fieldsValue['dealerId'],
+        job_types: fieldsValue['services'],
+        comment: fieldsValue['comment'],
+        date_expected:
+          fieldsValue['date'] && fieldsValue['date'].format('YYYY-MM-DD'),
+        part_of_day_expected: fieldsValue['partOfDay'],
+        name: fieldsValue['firstName'],
+        surname: fieldsValue['lastName'],
+        phone: fieldsValue['phoneNumber'],
+        email: fieldsValue['email'],
       };
+
+      axios.post(`/create-order`, values).then(() => {
+        this.props.history.push('/');
+      });
     });
   };
 
@@ -123,7 +152,7 @@ class NewRequestForm extends Component {
           </Form.Item>
         )}
         <Form.Item label="Укажите текущий пробег автомобиля">
-          {getFieldDecorator('kilometrage')(
+          {getFieldDecorator('mileage')(
             <InputNumber
               size="large"
               placeholder="Пробег, км"
@@ -147,7 +176,7 @@ class NewRequestForm extends Component {
             />
           </Row>
           <Row>
-            {getFieldDecorator('otherServices')(
+            {getFieldDecorator('comment')(
               <TextArea
                 placeholder="Другие услуги"
                 rows={4}
@@ -168,12 +197,12 @@ class NewRequestForm extends Component {
               )}
             </Form.Item>
             <Form.Item>
-              {getFieldDecorator('dayHalf', {
-                initialValue: 'am',
+              {getFieldDecorator('partOfDay', {
+                initialValue: '1',
               })(
                 <Radio.Group buttonStyle="solid" size="large">
-                  <Radio.Button value="am">До 14:00</Radio.Button>
-                  <Radio.Button value="pm">После 14:00</Radio.Button>
+                  <Radio.Button value="1">До 14:00</Radio.Button>
+                  <Radio.Button value="2">После 14:00</Radio.Button>
                 </Radio.Group>
               )}
             </Form.Item>

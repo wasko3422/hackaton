@@ -28,7 +28,7 @@ class DealersMap extends Component {
     loading: true,
     activeFeatureId: null,
     isAllDealersShown: false,
-    isListShown: false,
+    isListShown: true,
   };
 
   onMapLoad = (map) => {
@@ -104,12 +104,17 @@ class DealersMap extends Component {
           style={{
             height: '50vh',
             width: '100%',
+            overflow: 'hidden',
           }}
         >
           <Col
-            sm={isListShown ? 24 : 0}
+            sm={24}
             md={8}
-            style={{ height: '100%', overflow: 'hidden' }}
+            style={{
+              height: '100%',
+              overflow: 'hidden',
+              display: isListShown ? 'block' : 'none',
+            }}
           >
             <div className="list">
               <Spin
@@ -155,9 +160,10 @@ class DealersMap extends Component {
             </div>
           </Col>
           <Col
-            sm={isListShown ? 0 : 24}
+            sm={24}
             md={16}
             id="map"
+            className="map"
             style={{ height: '100%' }}
           >
             <Map
@@ -170,7 +176,13 @@ class DealersMap extends Component {
               onClick={this.onMapClick}
             >
               {dealers.map(
-                ({ dealer_id: id, lattitude, longtitude, address }) => {
+                ({
+                  dealer_id: id,
+                  dealer_name,
+                  lattitude,
+                  longtitude,
+                  address,
+                }) => {
                   const coords = [longtitude, lattitude];
                   return (
                     <div key={id}>
@@ -183,6 +195,7 @@ class DealersMap extends Component {
                             'bottom-right': [-12, -38],
                           }}
                         >
+                          <p className="title">{dealer_name}</p>
                           <Text>{address}</Text>
                         </Popup>
                       )}
