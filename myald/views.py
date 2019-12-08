@@ -108,7 +108,7 @@ class CreateOrderView(APIView):
         part_of_day_expected = data.get('part_of_day_expected')
 
         if not (job_types and mileage and part_of_day_expected and date_expected and dealer_id):
-            build_second_mail(order)
+            #build_second_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
 
         for i in job_types:
@@ -126,7 +126,7 @@ class CreateOrderView(APIView):
             order.status = 'sent'
             order.is_auto_sending = True
             order.save()
-            build_first_mail(order)
+            #build_first_mail(order)
             return HttpResponse(status=status.HTTP_200_OK)
 
         car = contract.car
@@ -138,7 +138,7 @@ class CreateOrderView(APIView):
                 order.is_auto_sending = True
                 order.save()
 
-                build_first_mail(order)
+                #build_first_mail(order)
                 return HttpResponse(status=status.HTTP_200_OK)
             
             build_second_mail(order)
@@ -149,8 +149,8 @@ class CreateOrderView(APIView):
             order.status = 'sent'
             order.is_auto_sending = True
             order.save()
-            build_first_mail(order)
-        build_second_mail(order)
+            #build_first_mail(order)
+        #build_second_mail(order)
         return HttpResponse(status=status.HTTP_200_OK)
 
 
