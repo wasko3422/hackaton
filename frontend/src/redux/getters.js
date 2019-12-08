@@ -49,7 +49,6 @@ export function getJobs() {
 }
 
 export function getDealers({ cityId, carId }) {
-  console.log('getDealers', { cityId, carId });
   if (!cityId || !carId) return () => {};
   return (dispatch) => {
     axios

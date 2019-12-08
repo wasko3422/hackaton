@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
 import cn from 'classnames';
 import { connect } from 'react-redux';
-import { Row, Col, Button, Icon, Spin, Typography } from 'antd';
+import { Row, Col, Button, Icon, Spin, Typography, Checkbox } from 'antd';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
 import './DealersMap.css';
@@ -25,6 +25,7 @@ class DealersMap extends Component {
     map: null,
     loading: true,
     activeFeatureId: null,
+    isOnlyPriority: true,
   };
 
   onMapLoad = (map) => {
@@ -58,69 +59,86 @@ class DealersMap extends Component {
     }
   };
 
+  setDealersFilter = ({ target }) => {
+    this.setState({ isOnlyPriority: !target.checked });
+  };
+
   render() {
-    const { loading, activeFeatureId } = this.state;
-    const { dealers, cityCoords } = this.props;
+    const { loading, activeFeatureId, isOnlyPriority } = this.state;
+    const { dealers: allDealers, cityCoords } = this.props;
     const mapCenter =
       cityCoords && cityCoords.features && cityCoords.features[0].center;
+
+    if (!allDealers) return null;
+
+    const priorityDealers = allDealers.filter(({ is_priority }) => is_priority);
+    const otherDealers = allDealers.filter(({ is_priority }) => !is_priority);
+    const dealers = isOnlyPriority
+      ? priorityDealers
+      : [...priorityDealers, ...otherDealers];
     return (
-      <Row
-        style={{
-          height: '50vh',
-          width: '100%',
-        }}
-      >
-        <Col span={8} style={{ height: '100%', overflow: 'hidden' }}>
-          <div className="list">
-            <Spin
-              spinning={loading}
-              size="large"
-              wrapperClassName="spin-wrapper"
-              indicator={<Icon type="loading" spin style={{ color: 'red' }} />}
-            >
-              {dealers &&
-                dealers.map(
-                  ({
-                    dealer_id: id,
-                    dealer_name,
-                    lattitude,
-                    longtitude,
-                    address,
-                  }) => {
-                    const isActive = this.state.activeFeatureId === id;
-                    const coords = [longtitude, lattitude];
-                    return (
-                      <div
-                        key={id}
-                        className={cn('item', { active: isActive })}
-                      >
-                        <Button
-                          type="link"
-                          onClick={() => this.onTitleClick(id, coords)}
-                          className="title"
+      <>
+        <Row
+          style={{
+            height: '50vh',
+            width: '100%',
+          }}
+        >
+          <Col span={8} style={{ height: '100%', overflow: 'hidden' }}>
+            <div className="list">
+              <Spin
+                spinning={loading}
+                size="large"
+                wrapperClassName="spin-wrapper"
+                indicator={
+                  <Icon type="loading" spin style={{ color: 'red' }} />
+                }
+              >
+                {dealers && dealers.length ? (
+                  dealers.map(
+                    ({
+                      dealer_id: id,
+                      dealer_name,
+                      lattitude,
+                      longtitude,
+                      address,
+                    }) => {
+                      const isActive = this.state.activeFeatureId === id;
+                      const coords = [longtitude, lattitude];
+                      return (
+                        <div
+                          key={id}
+                          className={cn('item', { active: isActive })}
                         >
-                          {dealer_name}
-                        </Button>
-                        <Text>{address}</Text>
-                      </div>
-                    );
-                  }
+                          <Button
+                            type="link"
+                            onClick={() => this.onTitleClick(id, coords)}
+                            className="title"
+                          >
+                            {dealer_name}
+                          </Button>
+                          <Text>{address}</Text>
+                        </div>
+                      );
+                    }
+                  )
+                ) : (
+                  <Text>Дилеров нет</Text>
                 )}
-            </Spin>
-          </div>
-        </Col>
-        <Col span={16} id="map" style={{ height: '100%' }}>
-          <Map
-            style="mapbox://styles/mapbox/light-v10"
-            onStyleLoad={this.onMapLoad}
-            center={mapCenter}
-            zoom={[9]}
-            movingMethod="jumpTo"
-            containerStyle={{ height: '100%' }}
-            onClick={this.onMapClick}
-          >
-            {dealers &&
-              dealers.map(
+              </Spin>
+            </div>
+          </Col>
+          <Col span={16} id="map" style={{ height: '100%' }}>
+            <Map
+              style="mapbox://styles/mapbox/light-v10"
+              onStyleLoad={this.onMapLoad}
+              center={mapCenter}
+              zoom={[9]}
+              movingMethod="jumpTo"
+              containerStyle={{ height: '100%' }}
+              onClick={this.onMapClick}
+            >
+              {dealers.map(
                 ({ dealer_id: id, lattitude, longtitude, address }) => {
                   const coords = [longtitude, lattitude];
                   return (
@@ -153,10 +171,15 @@ class DealersMap extends Component {
                   );
                 }
               )}
-          </Map>
-        </Col>
-      </Row>
-      //
+            </Map>
+          </Col>
+        </Row>
+        <Row>
+          <Checkbox onChange={this.setDealersFilter}>
+            Показать всех доступных дилеров
+          </Checkbox>
+        </Row>
+      </>
     );
   }
 }

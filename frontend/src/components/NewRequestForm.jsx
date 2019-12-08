@@ -64,7 +64,6 @@ class NewRequestForm extends Component {
     const { getFieldDecorator } = this.props.form;
     const { cars, cities, cityCoords, jobs, formState } = this.props;
     const { cityId, carId } = formState;
-    // console.log('TCL: NewRequestForm -> render -> cars', cars);
     const isMapShown = cityCoords && cityCoords.features[0] && carId && cityId;
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>

@@ -10,9 +10,8 @@ const New = ({ dispatch }) => {
   const [formState, setFormState] = useState({});
 
   const handleChange = (value) => {
-    const newState = { ...formState, ...value };
+    const newState = { ...formState, ...value, loading: true };
 
-    console.log('TCL: handleChange -> newState', newState);
     setFormState(newState);
     dispatch(getDealers(newState));
   };
