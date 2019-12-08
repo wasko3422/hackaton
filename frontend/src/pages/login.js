@@ -28,7 +28,7 @@ class ManagerLoginForm extends React.Component {
               prefix={
                 <Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />
               }
-              placeholder="Номер клиента"
+              placeholder="ID клиента"
             />
           )}
         </Form.Item>
@@ -73,7 +73,7 @@ class DriverLoginForm extends React.Component {
           })(
             <Input
               prefix={<Icon type="car" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Номер контракта"
+              placeholder="ID контракта"
             />
           )}
         </Form.Item>
@@ -107,27 +107,6 @@ class AdminLoginForm extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
-        <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Пожалуйста, введите логин' }],
-          })(
-            <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Логин"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Пожалуйста, введите пароль' }],
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
-              placeholder="Пароль"
-            />
-          )}
-        </Form.Item>
         <Form.Item>
           <Button
             type="danger"

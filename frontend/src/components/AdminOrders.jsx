@@ -3,7 +3,6 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import qs from 'qs';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
@@ -145,7 +144,7 @@ const getColumns = (dispatch) => [
     width: 100,
     render: (_, { order_id }) => (
       <span>
-        <Link to={`/administrate?edit=${order_id}`}>изменить</Link>
+        <Link to={`/admin/myald/order/${order_id}/change/`}>изменить</Link>
         <br />
         <Popconfirm
           title="Вы уверены?"
