@@ -9,10 +9,25 @@ import { Table, Tag, Popconfirm, message } from 'antd';
 
 import './AdminOrders.css';
 
-function confirm(e) {
+const confirm = (order_id, dispatch) => (e) => {
   console.log(e);
-  message.success('Click on Yes');
-}
+  const hide = message.loading('Удаление..', 0);
+
+  axios
+    .get(`/m-delete-order?order_id=${order_id}`)
+    .then(() => {
+      hide();
+      message.success('Удалено');
+      dispatch({
+        type: 'DELETE_ADMIN_ORDER',
+        payload: order_id,
+      });
+    })
+    .catch(() => {
+      hide();
+      message.error('Ошибка');
+    });
+};
 
 const getCarName = (car) => {
   return `${car.make.toUpperCase()} ${
@@ -20,7 +35,7 @@ const getCarName = (car) => {
   } / ${car.car_license_plate.toUpperCase()}`;
 };
 
-const columns = [
+const getColumns = (dispatch) => [
   {
     title: 'ID',
     dataIndex: 'order_id',
@@ -78,7 +93,7 @@ const columns = [
   {
     title: 'Перечень работ',
     dataIndex: 'order.jobs',
-    render: (jobs, _, index) => {
+    render: (jobs) => {
       if (!jobs || !jobs.length) {
         return '-';
       }
@@ -123,13 +138,13 @@ const columns = [
     key: 'operation',
     fixed: 'right',
     width: 100,
-    render: () => (
+    render: (_, { order_id }) => (
       <span>
         <a>изменить</a>
         <br />
         <Popconfirm
           title="Вы уверены?"
-          onConfirm={confirm}
+          onConfirm={confirm(order_id, dispatch)}
           okText="Да"
           cancelText="Нет"
           placement="bottomRight"
@@ -157,7 +172,7 @@ const AdminOrders = ({ adminOrders, dispatch, clientId }) => {
     dispatch(getAdminOrders(clientId));
   }, [clientId]);
 
-  const filteredColumns = columns.map((column) => {
+  const filteredColumns = getColumns(dispatch).map((column) => {
     if (column.dataIndex === 'car' && adminOrders) {
       return {
         ...column,
