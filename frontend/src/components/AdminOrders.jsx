@@ -232,8 +232,6 @@ const AdminOrders = ({ adminOrders, dispatch, location }) => {
     return column;
   });
 
-  console.log('adminOrders', adminOrders);
-
   return (
     <Table
       columns={filteredColumns}

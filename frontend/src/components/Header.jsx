@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import './Header.css';
 
-const Header = ({ client }) => {
-  console.log(client);
+const Header = () => {
   return (
     <PageHeader
       className="header"
@@ -19,4 +18,4 @@ const Header = ({ client }) => {
   );
 };
 
-export default connect((state) => ({ client: state.client }))(Header);
+export default Header;

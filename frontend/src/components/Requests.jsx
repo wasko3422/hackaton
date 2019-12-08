@@ -161,8 +161,6 @@ const Requests = ({ requests, dispatch, location }) => {
     return column;
   });
 
-  console.log('requests', requests);
-
   return (
     <Table
       columns={filteredColumns}
