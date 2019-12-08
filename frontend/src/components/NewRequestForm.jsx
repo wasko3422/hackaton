@@ -88,11 +88,10 @@ class NewRequestForm extends Component {
         email: fieldsValue['email'],
       };
 
-      axios
-        .post(`/create-order`, values)
-        .then(() => {
-          this.props.history.push('/');
-        });
+      axios.post(`/create-order`, values).then(() => {
+        this.props.history.push('/');
+      });
+    });
   };
 
   render() {
