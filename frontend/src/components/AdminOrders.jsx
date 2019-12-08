@@ -8,7 +8,6 @@ import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Table, Tag, Popconfirm, message } from 'antd';
-import AdminOrderEdit from './AdminOrderEdit';
 
 import './AdminOrders.css';
 
@@ -185,10 +184,6 @@ const AdminOrders = ({ adminOrders, dispatch, clientId, location }) => {
     );
 
     console.log('orderForEdit', orderForEdit);
-
-    if (orderForEdit) {
-      return <AdminOrderEdit order={orderForEdit} />;
-    }
   }
   const filteredColumns = getColumns(dispatch).map((column) => {
     if (column.dataIndex === 'car' && adminOrders) {
