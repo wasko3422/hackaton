@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import cn from 'classnames';
+import { withRouter } from 'react-router-dom';
+
 import { Form, Input, DatePicker, Radio, Button, Row } from 'antd';
 import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
 import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
-import {
-  getCars,
-  getCities,
-  getCityCoords,
-  getDealers,
-  getJobs,
-} from '../redux/getters';
+import { getCars, getCities, getCityCoords, getJobs } from '../redux/getters';
 
 const { TextArea } = Input;
 
@@ -36,9 +33,9 @@ const options = {
 
 class NewRequestForm extends Component {
   componentDidMount() {
-    const { cars, clientId } = this.props;
+    const { cars, location } = this.props;
     if (!cars) {
-      this.props.dispatch(getCars(clientId));
+      this.props.dispatch(getCars(location.search));
     }
     this.props.dispatch(getCities());
     this.props.dispatch(getJobs());
@@ -65,6 +62,7 @@ class NewRequestForm extends Component {
     const { cars, cities, cityCoords, jobs, formState } = this.props;
     const { cityId, carId } = formState;
     const isMapShown = cityCoords && cityCoords.features[0] && carId && cityId;
+
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Выберите автомобиль" required>
@@ -80,10 +78,12 @@ class NewRequestForm extends Component {
               options={
                 !cars
                   ? []
-                  : cars.map(({ car_id, car_make }) => ({
-                      value: car_id,
-                      label: `${car_make}`,
-                    }))
+                  : cars.map(
+                      ({ car_id, car_make, car_model, car_license_plate }) => ({
+                        value: car_id,
+                        label: cn(car_make, car_model, car_license_plate),
+                      })
+                    )
               }
               size="large"
             />
@@ -119,14 +119,7 @@ class NewRequestForm extends Component {
         </Form.Item>
         {isMapShown && (
           <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
-            {getFieldDecorator('dealerId', {
-              rules: [
-                {
-                  required: true,
-                  message: 'Обязательное поле',
-                },
-              ],
-            })(<DealersMap />)}
+            {getFieldDecorator('dealerId')(<DealersMap />)}
           </Form.Item>
         )}
         <Form.Item label="Укажите текущий пробег автомобиля">
@@ -198,10 +191,12 @@ const CreatedForm = Form.create({ name: 'request', ...options })(
   NewRequestForm
 );
 
-export default connect((state) => ({
-  cars: state.cars,
-  cities: state.cities,
-  cityCoords: state.cityCoords,
-  jobs: state.jobs,
-  clientId: state.client.id,
-}))(CreatedForm);
+export default withRouter(
+  connect((state) => ({
+    cars: state.cars,
+    cities: state.cities,
+    cityCoords: state.cityCoords,
+    jobs: state.jobs,
+    clientId: state.client.id,
+  }))(CreatedForm)
+);

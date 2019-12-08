@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
 import cn from 'classnames';
 import { connect } from 'react-redux';
-import { Row, Col, Button, Icon, Spin, Typography, Checkbox } from 'antd';
+import { withRouter } from 'react-router-dom';
+
+import { Row, Col, Button, Icon, Spin, Typography } from 'antd';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
 import './DealersMap.css';
@@ -25,7 +27,8 @@ class DealersMap extends Component {
     map: null,
     loading: true,
     activeFeatureId: null,
-    isOnlyPriority: true,
+    isAllDealersShown: false,
+    isListShown: false,
   };
 
   onMapLoad = (map) => {
@@ -61,12 +64,21 @@ class DealersMap extends Component {
     }
   };
 
-  setDealersFilter = ({ target }) => {
-    this.setState({ isOnlyPriority: !target.checked });
+  showAllDealers = () => {
+    this.setState({ isAllDealersShown: true });
+  };
+
+  switchMapList = () => {
+    this.setState({ isListShown: !this.state.isListShown });
   };
 
   render() {
-    const { loading, activeFeatureId, isOnlyPriority } = this.state;
+    const {
+      loading,
+      activeFeatureId,
+      isAllDealersShown,
+      isListShown,
+    } = this.state;
     const { dealers: allDealers, cityCoords } = this.props;
     const mapCenter =
       cityCoords && cityCoords.features && cityCoords.features[0].center;
@@ -75,18 +87,30 @@ class DealersMap extends Component {
 
     const priorityDealers = allDealers.filter(({ is_priority }) => is_priority);
     const otherDealers = allDealers.filter(({ is_priority }) => !is_priority);
-    const dealers = isOnlyPriority
-      ? priorityDealers
-      : [...priorityDealers, ...otherDealers];
+    const dealers =
+      isAllDealersShown || !priorityDealers.length
+        ? [...priorityDealers, ...otherDealers]
+        : priorityDealers;
     return (
       <>
+        <Row>
+          <Col sm={24} md={0}>
+            <Button onClick={this.switchMapList}>
+              Показать {isListShown ? 'карту' : 'список'}
+            </Button>
+          </Col>
+        </Row>
         <Row
           style={{
             height: '50vh',
             width: '100%',
           }}
         >
-          <Col span={8} style={{ height: '100%', overflow: 'hidden' }}>
+          <Col
+            sm={isListShown ? 24 : 0}
+            md={8}
+            style={{ height: '100%', overflow: 'hidden' }}
+          >
             <div className="list">
               <Spin
                 spinning={loading}
@@ -130,7 +154,12 @@ class DealersMap extends Component {
               </Spin>
             </div>
           </Col>
-          <Col span={16} id="map" style={{ height: '100%' }}>
+          <Col
+            sm={isListShown ? 0 : 24}
+            md={16}
+            id="map"
+            style={{ height: '100%' }}
+          >
             <Map
               style="mapbox://styles/mapbox/light-v10"
               onStyleLoad={this.onMapLoad}
@@ -177,17 +206,21 @@ class DealersMap extends Component {
           </Col>
         </Row>
         <Row>
-          <Checkbox onChange={this.setDealersFilter}>
-            Показать всех доступных дилеров
-          </Checkbox>
+          {!isAllDealersShown && priorityDealers.length > 0 && (
+            <Button type="primary" onClick={this.showAllDealers}>
+              Показать всех доступных дилеров
+            </Button>
+          )}
         </Row>
       </>
     );
   }
 }
 
-export default connect((state) => ({
-  cityCoords: state.cityCoords,
-  dealers: state.dealers,
-  clientId: state.client.id,
-}))(DealersMap);
+export default withRouter(
+  connect((state) => ({
+    cityCoords: state.cityCoords,
+    dealers: state.dealers,
+    clientId: state.client.id,
+  }))(DealersMap)
+);
