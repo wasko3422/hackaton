@@ -147,9 +147,7 @@ const getColumns = (dispatch) => [
         <div className="orders-actions">
           {status !== 'sent' && (
             <p>
-              <Link to={`/admin/myald/order/${order_id}/change/`}>
-                изменить
-              </Link>{' '}
+              <a href={`/admin/myald/order/${order_id}/change/`}>изменить</a>
             </p>
           )}
           <Popconfirm
