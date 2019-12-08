@@ -6,7 +6,7 @@ from .models import Client, Car, Dealer, Order, Contract, City, JobType, OrdersJ
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from hackaton.settings import ALDAVAR, EMAIL_HOST_USER
-from datetime import timedelta
+from datetime import timedelta, datetime
 from dateutil import parser
 
 
@@ -314,6 +314,8 @@ def get_or_none(model, *args, **kwargs):
 
 def build_first_mail(order):
 
+    order.sent_at = datetime.now()
+    order.save()
     text = """
 Заявка направлена дилеру. MyALD свяжется с вами для подтверждения.
 Дилер: {}
@@ -338,6 +340,10 @@ def build_first_mail(order):
 
 
 def build_second_mail(order):
+
+    order.sent_at = datetime.now()
+    order.save()
+
     text = """
 Ваша заявка получена. MyALD свяжется с вами для подтверждения.
 Заявка для дилера: {}

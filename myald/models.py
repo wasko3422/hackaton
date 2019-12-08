@@ -109,7 +109,7 @@ class Order(ModelTimestamps):
     date_expected = models.DateTimeField(null=True)
     part_of_day_expected = models.CharField(max_length=1, choices=COMBINATIONS)
     is_auto_sending = models.BooleanField(default=False)
-    sent_at = models.DateTimeField(null=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=32, choices=STATUSES)
 
     def __str__(self):
