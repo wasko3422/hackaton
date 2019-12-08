@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import cn from 'classnames';
 import { withRouter } from 'react-router-dom';
 
-import { Form, Input, DatePicker, Radio, Button, Row } from 'antd';
+import { Form, Input, InputNumber, DatePicker, Radio, Button, Row } from 'antd';
 import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
 import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
@@ -29,6 +29,15 @@ const options = {
   onFieldsChange(props, changedFields) {
     props.onChange(changedFields);
   },
+};
+
+const required = {
+  rules: [
+    {
+      required: true,
+      message: 'Обязательное поле',
+    },
+  ],
 };
 
 class NewRequestForm extends Component {
@@ -66,14 +75,10 @@ class NewRequestForm extends Component {
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
         <Form.Item label="Выберите автомобиль" required>
-          {getFieldDecorator('carId', {
-            rules: [
-              {
-                required: true,
-                message: 'Обязательное поле',
-              },
-            ],
-          })(
+          {getFieldDecorator(
+            'carId',
+            required
+          )(
             <CustomSelect
               options={
                 !cars
@@ -90,14 +95,10 @@ class NewRequestForm extends Component {
           )}
         </Form.Item>
         <Form.Item label="Выберите город обслуживания" required>
-          {getFieldDecorator('cityId', {
-            rules: [
-              {
-                required: true,
-                message: 'Обязательное поле',
-              },
-            ],
-          })(
+          {getFieldDecorator(
+            'cityId',
+            required
+          )(
             <CustomSelect
               placeholder="Город"
               options={
@@ -124,11 +125,10 @@ class NewRequestForm extends Component {
         )}
         <Form.Item label="Укажите текущий пробег автомобиля">
           {getFieldDecorator('kilometrage')(
-            <Input
-              type="number"
-              placeholder="Пробег"
-              addonAfter="км"
+            <InputNumber
               size="large"
+              placeholder="Пробег, км"
+              style={{ width: '100%' }}
             />
           )}
         </Form.Item>
@@ -179,6 +179,30 @@ class NewRequestForm extends Component {
               )}
             </Form.Item>
           </Row>
+        </Form.Item>
+        <Form.Item label="Имя">
+          {getFieldDecorator(
+            'firstName',
+            required
+          )(<Input type="text" size="large" />)}
+        </Form.Item>
+        <Form.Item label="Фамилия">
+          {getFieldDecorator(
+            'lastName',
+            required
+          )(<Input type="text" size="large" />)}
+        </Form.Item>
+        <Form.Item label="Телефон">
+          {getFieldDecorator(
+            'phoneNumber',
+            required
+          )(<InputNumber size="large" style={{ width: '100%' }} />)}
+        </Form.Item>
+        <Form.Item label="E-mail">
+          {getFieldDecorator(
+            'email',
+            required
+          )(<Input type="email" size="large" />)}
         </Form.Item>
         <Button type="primary" htmlType="submit" size="large">
           Отправить заявку
