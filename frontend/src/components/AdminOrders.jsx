@@ -11,7 +11,6 @@ import { Table, Tag, Popconfirm, message } from 'antd';
 import './AdminOrders.css';
 
 const confirm = (order_id, dispatch) => (e) => {
-  console.log(e);
   const hide = message.loading('Удаление..', 0);
 
   axios
@@ -21,6 +20,25 @@ const confirm = (order_id, dispatch) => (e) => {
       message.success('Удалено');
       dispatch({
         type: 'DELETE_ADMIN_ORDER',
+        payload: order_id,
+      });
+    })
+    .catch(() => {
+      hide();
+      message.error('Ошибка');
+    });
+};
+
+const confirmSent = (order_id, dispatch) => (e) => {
+  const hide = message.loading('Отправка..', 0);
+
+  axios
+    .post('/m-send-mail', { order_id })
+    .then(() => {
+      hide();
+      message.success('Отправлено');
+      dispatch({
+        type: 'SENT_ADMIN_ORDER',
         payload: order_id,
       });
     })
@@ -162,6 +180,15 @@ const getColumns = (dispatch) => [
           {status !== 'sent' && status !== 'declined' && (
             <p>
               <a>email</a>
+              <Popconfirm
+                title="Отправить письмо дилеру?"
+                onConfirm={confirmSent(order_id, dispatch)}
+                okText="Да"
+                cancelText="Нет"
+                placement="bottomRight"
+              >
+                <a>отправить письмо</a>
+              </Popconfirm>
             </p>
           )}
         </div>
