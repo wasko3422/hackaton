@@ -64,7 +64,6 @@ class NewRequestForm extends Component {
     const { getFieldDecorator } = this.props.form;
     const { cars, cities, cityCoords, jobs, formState } = this.props;
     const { cityId, carId } = formState;
-    // console.log('TCL: NewRequestForm -> render -> cars', cars);
     const isMapShown = cityCoords && cityCoords.features[0] && carId && cityId;
     return (
       <Form {...formItemLayout} onSubmit={this.handleSubmit}>
@@ -120,7 +119,14 @@ class NewRequestForm extends Component {
         </Form.Item>
         {isMapShown && (
           <Form.Item wrapperCol={{ span: 24 }} label="Выберите дилера">
-            <DealersMap />
+            {getFieldDecorator('dealerId', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Обязательное поле',
+                },
+              ],
+            })(<DealersMap />)}
           </Form.Item>
         )}
         <Form.Item label="Укажите текущий пробег автомобиля">
