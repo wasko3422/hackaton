@@ -32,29 +32,29 @@ const Index = () => (
       <TabPane
         tab={
           <div className="tab">
-            <Icon type="car" />
-            Автомобили
+            <Icon type="bars" />
+            Заказы
           </div>
         }
         key="1"
       >
         <div className="tab-content">
-          <div className="cars-content">
-            <Cars />
-          </div>
+          <Orders />
         </div>
       </TabPane>
       <TabPane
         tab={
           <div className="tab">
-            <Icon type="bars" />
-            Заказы
+            <Icon type="car" />
+            Автомобили
           </div>
         }
         key="2"
       >
         <div className="tab-content">
-          <Orders />
+          <div className="cars-content">
+            <Cars />
+          </div>
         </div>
       </TabPane>
     </Tabs>
