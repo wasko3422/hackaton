@@ -1,6 +1,6 @@
 import React from 'react';
-import axios from 'axios';
 import thunk from 'redux-thunk';
+import qs from 'qs';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './redux/reducer';
@@ -11,7 +11,12 @@ import Header from './components/Header';
 import New from './pages/new';
 import './App.css';
 
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
 
 import { Layout, ConfigProvider } from 'antd';
 import ruRU from 'antd/es/locale/ru_RU';
@@ -25,20 +30,6 @@ const { Footer, Content } = Layout;
 const store = createStore(reducer, applyMiddleware(thunk));
 
 export default function App() {
-  // Make a request for a user with a given ID
-  axios
-    .get('/get-cities')
-    .then(function(response) {
-      // handle success
-      console.log(response);
-    })
-    .catch(function(error) {
-      // handle error
-      console.log(error);
-    })
-    .finally(function() {
-      // always executed
-    });
   return (
     <ConfigProvider locale={ruRU}>
       <Provider store={store}>
@@ -50,15 +41,15 @@ export default function App() {
                 <Route path="/login">
                   <Login />
                 </Route>
-                <Route path="/new">
-                  <New />
-                </Route>
                 <Route path="/administrate">
                   <Administrate />
                 </Route>
-                <Route path="/" exact>
+                <PrivateRoute path="/new">
+                  <New />
+                </PrivateRoute>
+                <PrivateRoute path="/" exact>
                   <Index />
-                </Route>
+                </PrivateRoute>
               </Switch>
             </Content>
             <Footer style={{ textAlign: 'center' }}>
@@ -68,5 +59,26 @@ export default function App() {
         </Router>
       </Provider>
     </ConfigProvider>
+  );
+}
+
+function PrivateRoute({ children, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={({ location }) => {
+        const query = qs.parse(location.search, { ignoreQueryPrefix: true });
+        const isAuth = query.client_id || query.contract_id;
+        return isAuth ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+            }}
+          />
+        );
+      }}
+    />
   );
 }

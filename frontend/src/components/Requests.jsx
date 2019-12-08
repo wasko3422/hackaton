@@ -3,7 +3,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import qs from 'qs';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import { Table, Tag } from 'antd';
@@ -19,6 +19,7 @@ const columns = [
     title: 'ID',
     dataIndex: 'order_id',
     width: 100,
+    sorter: (a, b) => a.order_id - b.order_id,
   },
   {
     title: 'Автомобиль',
@@ -125,9 +126,9 @@ const columns = [
   },
 ];
 
-function getRequests(clientId) {
+function getRequests(search) {
   return (dispatch) => {
-    axios.get(`/get-orders?client_id=${clientId}`).then((res) =>
+    axios.get(`/get-orders${search}`).then((res) =>
       dispatch({
         type: 'FETCH_REQUESTS',
         payload: res.data || [],
@@ -136,10 +137,10 @@ function getRequests(clientId) {
   };
 }
 
-const Requests = ({ requests, dispatch, clientId }) => {
+const Requests = ({ requests, dispatch, location }) => {
   React.useEffect(() => {
-    dispatch(getRequests(clientId));
-  }, [clientId]);
+    dispatch(getRequests(location.search));
+  }, [location.search]);
 
   const filteredColumns = columns.map((column) => {
     if (column.dataIndex === 'car' && requests) {
@@ -178,7 +179,9 @@ const Requests = ({ requests, dispatch, clientId }) => {
   );
 };
 
-export default connect((state) => ({
-  requests: state.requests,
-  clientId: state.client.id,
-}))(Requests);
+export default withRouter(
+  connect((state) => ({
+    requests: state.requests,
+    clientId: state.client.id,
+  }))(Requests)
+);

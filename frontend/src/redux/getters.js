@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export function getCars(clientId) {
+export function getCars(search) {
   return (dispatch) => {
-    axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
+    axios.get(`/get-cars${search}`).then((res) =>
       dispatch({
         type: 'FETCH_CARS',
         payload: res.data || [],

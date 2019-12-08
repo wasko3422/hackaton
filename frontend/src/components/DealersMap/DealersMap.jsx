@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
 import cn from 'classnames';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+
 import { Row, Col, Button, Icon, Spin, Typography } from 'antd';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
@@ -215,8 +217,10 @@ class DealersMap extends Component {
   }
 }
 
-export default connect((state) => ({
-  cityCoords: state.cityCoords,
-  dealers: state.dealers,
-  clientId: state.client.id,
-}))(DealersMap);
+export default withRouter(
+  connect((state) => ({
+    cityCoords: state.cityCoords,
+    dealers: state.dealers,
+    clientId: state.client.id,
+  }))(DealersMap)
+);
