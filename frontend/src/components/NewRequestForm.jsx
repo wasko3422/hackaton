@@ -5,7 +5,17 @@ import qs from 'qs';
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 
-import { Form, Input, InputNumber, DatePicker, Radio, Button, Row } from 'antd';
+import {
+  Form,
+  Input,
+  InputNumber,
+  DatePicker,
+  Checkbox,
+  Radio,
+  Button,
+  Row,
+  message,
+} from 'antd';
 import { CustomSelect } from '../components/Selects';
 import { CheckboxGroup } from '../components/CheckboxGroup';
 import DealersMap, { ACCESS_TOKEN } from './DealersMap/DealersMap';
@@ -18,12 +28,10 @@ const formItemLayout = {
   labelCol: {
     sm: { span: 24 },
     md: { span: 12 },
-    xl: { span: 8 },
   },
   wrapperCol: {
     sm: { span: 24 },
-    md: { span: 11, offset: 1 },
-    lg: { span: 8 },
+    md: { span: 12 },
   },
 };
 
@@ -43,6 +51,11 @@ const required = {
 };
 
 class NewRequestForm extends Component {
+  state = {
+    loading: false,
+    submitDisabled: true,
+  };
+
   componentDidMount() {
     const { cars, location } = this.props;
     if (!cars) {
@@ -88,9 +101,25 @@ class NewRequestForm extends Component {
         email: fieldsValue['email'],
       };
 
-      axios.post(`/create-order`, values).then(() => {
-        this.props.history.push('/');
+      const hide = message.loading('Отправка..', 0);
+      this.setState({
+        loading: true,
       });
+
+      const timeout = new Promise(function(resolve, reject) {
+        setTimeout(resolve, 3000);
+      });
+
+      Promise.race([axios.post(`/create-order`, values), timeout]).then(
+        function() {
+          hide();
+          const hideSuccess = message.success('Заявка создана успешно', 0);
+          setTimeout(() => {
+            hideSuccess();
+            window.location.href = `/${window.location.search}`;
+          }, 2000);
+        }
+      );
     });
   };
 
@@ -193,6 +222,7 @@ class NewRequestForm extends Component {
                   size={'large'}
                   placeholder="Выберите дату"
                   style={{ marginRight: '20px', marginBottom: '15px' }}
+                  format="DD.MM.YYYY"
                 />
               )}
             </Form.Item>
@@ -232,7 +262,28 @@ class NewRequestForm extends Component {
             required
           )(<Input type="email" size="large" />)}
         </Form.Item>
-        <Button type="primary" htmlType="submit" size="large">
+        <Form.Item>
+          {getFieldDecorator(
+            'confirm',
+            required
+          )(
+            <Checkbox
+              style={{ fontSize: '16px' }}
+              onChange={({ target }) => {
+                this.setState({ submitDisabled: !target.checked });
+              }}
+            >
+              Согласие на обработку персональных данных
+            </Checkbox>
+          )}
+        </Form.Item>
+        <Button
+          loading={this.state.loading}
+          disabled={this.state.submitDisabled}
+          type="primary"
+          htmlType="submit"
+          size="large"
+        >
           Отправить заявку
         </Button>
       </Form>
