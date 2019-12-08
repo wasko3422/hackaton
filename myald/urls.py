@@ -14,5 +14,7 @@ urlpatterns = [
     path('m-auth', views.login),
     path('m-delete-order', views.DeleteOrderView.as_view()),
     path('m-update-order', views.UpdateOrderView.as_view()),
-    path('m-get-orders', views.AllOrdersView.as_view())
+    path('m-get-orders', views.AllOrdersView.as_view()),
+    path('m-update-order-status', views.ChangeStatusView.as_view()),
+    path('m-send-mail', views.SendEmailView.as_view()),
 ]

@@ -233,6 +233,33 @@ class AllOrdersView(APIView):
         return JsonResponse(result, safe=False, status=status.HTTP_200_OK)
 
 
+class SendEmailView(APIView):
+
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        order = get_or_none(Order, id=order_id)
+
+        if order:
+            dealer = order.dealer
+            send_mail('text 1', 'text 1', EMAIL_HOST_USER, [order.email, ALDAVAR, dealer.email])
+
+        return HttpResponse(status=status.HTTP_200_OK)
+
+
+
+class ChangeStatusView(APIView):
+
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        statuso = request.data.get('status')
+
+        order = get_or_none(Order, id=order_id)
+
+        if order:
+            order.status = statuso
+            order.save()
+        return HttpResponse(status=status.HTTP_200_OK)
+
 #TODO auth
 def login(request):
     return HttpResponse(status=status.HTTP_200_OK)
