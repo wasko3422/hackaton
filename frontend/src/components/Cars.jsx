@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React from 'react';
-import axios from 'axios';
 import _ from 'lodash';
 import {
   Card,
@@ -16,18 +15,8 @@ import {
 } from 'antd';
 
 import { connect } from 'react-redux';
+import { getCars } from '../redux/getters';
 const { Meta } = Card;
-
-function getCars(clientId) {
-  return (dispatch) => {
-    axios.get(`/get-cars?client_id=${clientId}`).then((res) =>
-      dispatch({
-        type: 'FETCH_CARS',
-        payload: res.data || [],
-      })
-    );
-  };
-}
 
 const Cars = ({ cars, dispatch, clientId }) => {
   React.useEffect(() => {

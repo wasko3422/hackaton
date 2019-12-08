@@ -32,7 +32,7 @@ export class CustomSelect extends Component {
         {...this.props}
       >
         {options.map(({ value, label }) => (
-          <Option key={value} value={label}>
+          <Option key={value} value={value}>
             {label}
           </Option>
         ))}

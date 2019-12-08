@@ -46,10 +46,10 @@ export class CheckboxGroup extends React.Component {
         )}
         {getFieldDecorator(name, { setFieldsValue: this.state.checkedList })(
           <Checkbox.Group onChange={this.onChange}>
-            {this.props.options.map((option) => (
-              <Row key={option} style={{ marginBottom: '0.5em' }}>
-                <Checkbox value={option} style={{ fontSize: '16px' }}>
-                  {option}
+            {this.props.options.map(({ value, label }) => (
+              <Row key={value} style={{ marginBottom: '0.5em' }}>
+                <Checkbox value={value} style={{ fontSize: '16px' }}>
+                  {label}
                 </Checkbox>
               </Row>
             ))}

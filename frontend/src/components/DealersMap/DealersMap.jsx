@@ -1,26 +1,16 @@
 import React, { Component } from 'react';
 import mapboxgl from 'mapbox-gl';
-import axios from 'axios';
 import cn from 'classnames';
 import { connect } from 'react-redux';
-import { Row, Col, Button, Icon, Spin } from 'antd';
+import { Row, Col, Button, Icon, Spin, Typography } from 'antd';
 import ReactMapboxGl, { Marker, Popup } from 'react-mapbox-gl';
 
 import './DealersMap.css';
 
+const { Text } = Typography;
+
 export const ACCESS_TOKEN =
   'pk.eyJ1IjoiZ2VvcmdlZ3VzMjciLCJhIjoiY2szdWU5eDhnMDNuczNtcWVlNDRtcTV4ciJ9.yBl68gguil7L7_WhcmcrEw';
-
-function getDealers() {
-  return (dispatch) => {
-    axios.get('/get-dealers').then((res) =>
-      dispatch({
-        type: 'FETCH_DEALERS',
-        payload: res.data || [],
-      })
-    );
-  };
-}
 
 const Map = ReactMapboxGl({
   accessToken: ACCESS_TOKEN,
@@ -37,10 +27,6 @@ class DealersMap extends Component {
     activeFeatureId: null,
   };
 
-  componentDidMount() {
-    this.props.dispatch(getDealers());
-  }
-
   onMapLoad = (map) => {
     this.setState({ map, loading: false }, () => {
       map.addControl(
@@ -55,11 +41,11 @@ class DealersMap extends Component {
     });
   };
 
-  onTitleClick = (id, geometry) => {
+  onTitleClick = (id, coords) => {
     if (this.state.map) {
       this.setState({ activeFeatureId: id }, () => {
-        this.state.map.flyTo({
-          center: geometry.coordinates,
+        this.state.map.jumpTo({
+          center: coords,
           zoom: 15,
         });
       });
@@ -93,20 +79,33 @@ class DealersMap extends Component {
               indicator={<Icon type="loading" spin style={{ color: 'red' }} />}
             >
               {dealers &&
-                dealers.map(({ id, geometry, props }) => {
-                  const isActive = this.state.activeFeatureId === id;
-                  return (
-                    <div key={id} className={cn('item', { active: isActive })}>
-                      <Button
-                        type="link"
-                        onClick={() => this.onTitleClick(id, geometry)}
-                        className="title"
+                dealers.map(
+                  ({
+                    dealer_id: id,
+                    dealer_name,
+                    lattitude,
+                    longtitude,
+                    address,
+                  }) => {
+                    const isActive = this.state.activeFeatureId === id;
+                    const coords = [longtitude, lattitude];
+                    return (
+                      <div
+                        key={id}
+                        className={cn('item', { active: isActive })}
                       >
-                        {props.address}
-                      </Button>
-                    </div>
-                  );
-                })}
+                        <Button
+                          type="link"
+                          onClick={() => this.onTitleClick(id, coords)}
+                          className="title"
+                        >
+                          {dealer_name}
+                        </Button>
+                        <Text>{address}</Text>
+                      </div>
+                    );
+                  }
+                )}
             </Spin>
           </div>
         </Col>
@@ -116,38 +115,44 @@ class DealersMap extends Component {
             onStyleLoad={this.onMapLoad}
             center={mapCenter}
             zoom={[9]}
+            movingMethod="jumpTo"
             containerStyle={{ height: '100%' }}
             onClick={this.onMapClick}
           >
             {dealers &&
-              dealers.map(({ id, geometry, props }) => (
-                <div key={id}>
-                  {activeFeatureId === id && (
-                    <Popup
-                      coordinates={geometry.coordinates}
-                      offset={{
-                        'bottom-left': [12, -38],
-                        bottom: [0, -38],
-                        'bottom-right': [-12, -38],
-                      }}
-                    >
-                      {props.city}, {props.address}
-                    </Popup>
-                  )}
-                  <Marker coordinates={geometry.coordinates}>
-                    <Button
-                      type="link"
-                      onClick={() => this.onTitleClick(id, geometry)}
-                    >
-                      <Icon
-                        type="car"
-                        theme="filled"
-                        style={{ color: '#e4002d', fontSize: '30px' }}
-                      />
-                    </Button>
-                  </Marker>
-                </div>
-              ))}
+              dealers.map(
+                ({ dealer_id: id, lattitude, longtitude, address }) => {
+                  const coords = [longtitude, lattitude];
+                  return (
+                    <div key={id}>
+                      {activeFeatureId === id && (
+                        <Popup
+                          coordinates={coords}
+                          offset={{
+                            'bottom-left': [12, -38],
+                            bottom: [0, -38],
+                            'bottom-right': [-12, -38],
+                          }}
+                        >
+                          <Text>{address}</Text>
+                        </Popup>
+                      )}
+                      <Marker coordinates={coords}>
+                        <Button
+                          type="link"
+                          onClick={() => this.onTitleClick(id, coords)}
+                        >
+                          <Icon
+                            type="tool"
+                            theme="filled"
+                            style={{ color: '#e4002d', fontSize: '30px' }}
+                          />
+                        </Button>
+                      </Marker>
+                    </div>
+                  );
+                }
+              )}
           </Map>
         </Col>
       </Row>

@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { Typography } from 'antd';
 import NewRequestForm from '../components/NewRequestForm';
+import { getDealers } from '../redux/getters';
 
 const { Title } = Typography;
 
-const New = () => {
+const New = ({ dispatch }) => {
+  const [formState, setFormState] = useState({});
+
+  const handleChange = (value) => {
+    const newState = { ...formState, ...value };
+
+    console.log('TCL: handleChange -> newState', newState);
+    setFormState(newState);
+    dispatch(getDealers(newState));
+  };
+
   return (
     <div
       style={{
@@ -14,9 +26,9 @@ const New = () => {
       }}
     >
       <Title>Новая заявка</Title>
-      <NewRequestForm />
+      <NewRequestForm formState={formState} onChange={handleChange} />
     </div>
   );
 };
 
-export default New;
+export default connect()(New);

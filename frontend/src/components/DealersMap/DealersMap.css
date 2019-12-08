@@ -4,14 +4,13 @@
 
 .list {
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .list .item {
-  display: block;
   border-bottom: 1px solid #eee;
   padding: 10px;
-  text-decoration: none;
+  line-height: 1.5;
 }
 
 .list .item.active {
@@ -26,11 +25,11 @@
   display: block;
   color: #e4002d;
   font-weight: 700;
+  white-space: normal;
+  text-align: left;
   padding: 0;
-}
-
-.list .item .title small {
-  font-weight: 400;
+  margin-bottom: 0.5em;
+  height: auto;
 }
 
 .list .item.active .title,

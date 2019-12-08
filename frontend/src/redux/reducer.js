@@ -4,6 +4,7 @@ import { cars } from './reducers/cars';
 import { cities } from './reducers/cities';
 import { cityCoords } from './reducers/cityCoords';
 import { dealers } from './reducers/dealers';
+import { jobs } from './reducers/jobs';
 import { requests } from './reducers/requests';
 import { completedOrders } from './reducers/completedOrders';
 
@@ -13,6 +14,7 @@ export default combineReducers({
   cities,
   cityCoords,
   dealers,
+  jobs,
   requests,
   completedOrders,
 });
