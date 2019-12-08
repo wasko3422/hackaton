@@ -3,10 +3,10 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Table, Tag, Popconfirm, message } from 'antd';
+import { Table, Tag, Popconfirm, message, Icon } from 'antd';
 
 import './AdminOrders.css';
 
@@ -64,7 +64,7 @@ const getColumns = (dispatch) => [
   },
   {
     title: 'Контракт',
-    dataIndex: 'contract_id',
+    dataIndex: 'contract_number',
     width: 100,
   },
   {
@@ -159,13 +159,30 @@ const getColumns = (dispatch) => [
     title: 'Действия',
     key: 'operation',
     fixed: 'right',
-    width: 100,
+    width: 130,
     render: (_, { order_id, order: { status } }) => {
       return (
         <div className="orders-actions">
           {status !== 'sent' && (
             <p>
-              <a href={`/admin/myald/order/${order_id}/change/`}>изменить</a>
+              <a href={`/admin/myald/order/${order_id}/change/`}>
+                <Icon type="edit" /> изменить
+              </a>
+            </p>
+          )}
+          {status !== 'sent' && status !== 'declined' && (
+            <p>
+              <Popconfirm
+                title="Отправить письмо дилеру?"
+                onConfirm={confirmSent(order_id, dispatch)}
+                okText="Да"
+                cancelText="Нет"
+                placement="bottomRight"
+              >
+                <a>
+                  <Icon type="mail" /> отправить письмо
+                </a>
+              </Popconfirm>
             </p>
           )}
           <Popconfirm
@@ -175,22 +192,10 @@ const getColumns = (dispatch) => [
             cancelText="Нет"
             placement="bottomRight"
           >
-            <a style={{ color: '#f5222d' }}>удалить</a>
+            <a style={{ color: '#f5222d' }}>
+              <Icon type="delete" /> удалить
+            </a>
           </Popconfirm>
-          {status !== 'sent' && status !== 'declined' && (
-            <p>
-              <a>email</a>
-              <Popconfirm
-                title="Отправить письмо дилеру?"
-                onConfirm={confirmSent(order_id, dispatch)}
-                okText="Да"
-                cancelText="Нет"
-                placement="bottomRight"
-              >
-                <a>отправить письмо</a>
-              </Popconfirm>
-            </p>
-          )}
         </div>
       );
     },
@@ -231,8 +236,6 @@ const AdminOrders = ({ adminOrders, dispatch, location }) => {
     }
     return column;
   });
-
-  console.log('adminOrders', adminOrders);
 
   return (
     <Table

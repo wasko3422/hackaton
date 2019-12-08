@@ -6,7 +6,7 @@ from .models import Client, Car, Dealer, Order, Contract, City, JobType, OrdersJ
 from rest_framework.views import APIView
 from django.core.mail import send_mail
 from hackaton.settings import ALDAVAR, EMAIL_HOST_USER
-from datetime import timedelta
+from datetime import timedelta, datetime
 from dateutil import parser
 
 
@@ -90,24 +90,27 @@ class CreateOrderView(APIView):
         if not (client, contract, city):
             return JsonResponse({"error": "Unknown car or city or client"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+        date_expected = data.get('date_expected')
+
+        if date_expected:
+            date_expected = parser.parse(date_expected)
+        
         order = Order(
             contract=contract, client=client, city=city, 
             dealer=dealer, comment=data.get('comment', ''), 
-            date_expected=data.get('date_expected'),
+            date_expected=date_expected,
             part_of_day_expected=data.get('part_of_day_expected', '1'),
             mileage=data.get('mileage'), status=data.get('status', 'created'),
             is_auto_sending=False, last_name=surname, first_name=name, phone=phone, email=email)
 
         order.save()
 
+        order = Order.objects.get(id=order.id)
+
         is_main_service = False
         job_types = data.get('job_types', [])
         mileage = data.get('mileage')
         part_of_day_expected = data.get('part_of_day_expected')
-        date_expected = data.get('date_expected')
-
-        if date_expected:
-            date_expected = parser.parse(date_expected)
 
         if not (job_types and mileage and part_of_day_expected and date_expected and dealer):
             build_second_mail(order)
@@ -314,8 +317,10 @@ def get_or_none(model, *args, **kwargs):
 
 def build_first_mail(order):
 
+    order.sent_at = datetime.now()
+    order.save()
     text = """
-Заявка автоматически направлена дилеру. MyALD свяжется с вами для подтверждения.
+Заявка направлена дилеру. MyALD свяжется с вами для подтверждения.
 Дилер: {}
 Автомобиль:
 {} {} {}
@@ -338,6 +343,10 @@ def build_first_mail(order):
 
 
 def build_second_mail(order):
+
+    order.sent_at = datetime.now()
+    order.save()
+
     text = """
 Ваша заявка получена. MyALD свяжется с вами для подтверждения.
 Заявка для дилера: {}

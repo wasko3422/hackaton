@@ -50,8 +50,6 @@ const Cars = ({ cars, dispatch, location }) => {
     );
   }
 
-  console.log('cars', cars);
-
   return (
     <>
       {_.chunk(cars, 3).map((chunk) => {

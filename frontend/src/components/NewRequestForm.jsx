@@ -87,18 +87,12 @@ class NewRequestForm extends Component {
         phone: fieldsValue['phoneNumber'],
         email: fieldsValue['email'],
       };
-      console.log('Received values of form: ', values);
 
       axios
         .post(`/create-order`, values)
-        .then((res) => {
-          console.log('ORDER SUCCESS', res);
+        .then(() => {
           this.props.history.push('/');
-        })
-        .catch((err) => {
-          console.error('ORDER ERROR', err);
         });
-    });
   };
 
   render() {
