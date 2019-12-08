@@ -19,28 +19,29 @@ const New = ({ dispatch }) => {
   };
 
   return (
-    <div
+    <Row
       style={{
         background: '#fff',
         padding: 24,
         minHeight: 280,
       }}
     >
-      <Row
-        type="flex"
-        justify="space-between"
-        gutter={[16, 16]}
-        style={{ marginBottom: '1em' }}
-      >
-        <Col>
-          <Title>Новая заявка</Title>
-        </Col>
-        <Col>
-          <SupportPhoneNumber />
-        </Col>
-      </Row>
-      <NewRequestForm formState={formState} onChange={handleChange} />
-    </div>
+      <Col lg={2} xl={4} xxl={6}></Col>
+      <Col lg={20} xl={16} xxl={12}>
+        <Row gutter={[16, 16]} style={{ marginBottom: '1em' }}>
+          <Col md={8}>
+            <Title level={2} style={{ textAlign: 'center', paddingTop: 15 }}>
+              Новая заявка
+            </Title>
+          </Col>
+          <Col md={16}>
+            <SupportPhoneNumber />
+          </Col>
+        </Row>
+        <NewRequestForm formState={formState} onChange={handleChange} />
+      </Col>
+      <Col lg={2} xl={4} xxl={6}></Col>
+    </Row>
   );
 };
 

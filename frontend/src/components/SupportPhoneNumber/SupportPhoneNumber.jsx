@@ -9,7 +9,7 @@ const SupportPhoneNumber = () => (
   <div className="support">
     <Text>Позвоните нам, если хотите оставить заявку по телефону</Text>
     <a href="tel:8 800 505 04 03" className="phone-number">
-      <Icon type="phone" theme="filled" /> 8 800 505 04 03
+      <Icon type="phone" /> 8 800 505 04 03
     </a>
   </div>
 );

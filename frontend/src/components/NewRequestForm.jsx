@@ -28,11 +28,10 @@ const formItemLayout = {
   labelCol: {
     sm: { span: 24 },
     md: { span: 12 },
-    xl: { span: 8 },
   },
   wrapperCol: {
     sm: { span: 24 },
-    md: { span: 12 },
+    md: { span: 11, offset: 1 },
     lg: { span: 8 },
   },
 };
@@ -113,7 +112,7 @@ class NewRequestForm extends Component {
       });
 
       Promise.race([axios.post(`/create-order`, values), timeout]).then(
-        function(value) {
+        function() {
           hide();
           const hideSuccess = message.success('Заявка создана успешно', 0);
           setTimeout(() => {
