@@ -9,7 +9,7 @@ class ManagerLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        window.location.replace('/');
+        window.location.replace(`/?client_id=${values.client}`);
       }
     });
   };
@@ -19,23 +19,16 @@ class ManagerLoginForm extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
-          {getFieldDecorator('username', {
-            rules: [{ required: true, message: 'Пожалуйста, введите email' }],
+          {getFieldDecorator('client', {
+            rules: [
+              { required: true, message: 'Пожалуйста, введите номер клиента' },
+            ],
           })(
             <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Email"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Пожалуйста, введите пароль' }],
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
-              placeholder="Пароль"
+              prefix={
+                <Icon type="number" style={{ color: 'rgba(0,0,0,.25)' }} />
+              }
+              placeholder="Номер клиента"
             />
           )}
         </Form.Item>
@@ -60,7 +53,7 @@ class DriverLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        window.location.replace('/');
+        window.location.replace(`/?contract_id=${values.contract}`);
       }
     });
   };
@@ -70,7 +63,7 @@ class DriverLoginForm extends React.Component {
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <Form.Item>
-          {getFieldDecorator('username', {
+          {getFieldDecorator('contract', {
             rules: [
               {
                 required: true,
@@ -79,20 +72,8 @@ class DriverLoginForm extends React.Component {
             ],
           })(
             <Input
-              prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Номер контракта"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('password', {
-            rules: [
-              { required: true, message: 'Пожалуйста, введите госномер' },
-            ],
-          })(
-            <Input
               prefix={<Icon type="car" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              placeholder="Гос.номер"
+              placeholder="Номер контракта"
             />
           )}
         </Form.Item>
